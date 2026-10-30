@@ -1,0 +1,23 @@
+
+
+
+#================================================================#
+# table gm_users
+#================================================================#
+create table if not exists gm_users(
+id INT AUTO_INCREMENT PRIMARY KEY,
+name VARCHAR(50) NOT NULL,
+email VARCHAR(100) UNIQUE NOT NULL,
+password VARCHAR(260) NOT NULL,
+rol_id int(11) not null,
+creation_date DATETIME DEFAULT CURRENT_TIMESTAMP
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+# ======================================================== #
+# table gm_roles
+# ======================================================== #
+CREATE TABLE IF NOT EXISTS gm_roles(
+id int(11) AUTO_INCREMENT primary key,
+role_description varchar(100) not null
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
