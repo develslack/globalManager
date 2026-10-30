@@ -1,0 +1,49 @@
+Proyecto GLOBAL MANAGER
+###############################################
+
+* DIRECTIVAS DE TRABAJO
+##############################################
+
+1 - Todos los directorios que se generen y archivos deberán ser nombrados en inglés.
+    (Esto para garantizar que si un desarrollodor que no hable español pueda entender que hace el código)
+
+2 - La documentación para desarrolladores se realizará tanto en español como en inglés y comentarios en el código deben hacerse en inglés.
+
+3 - las funciones y todo el código deberá hacerse en inglés.
+
+4 - Los nombres de las tablas en la base de datos seguirán la nomenclatura gm_nombre_tabla y también serán nombradas en inglés.
+
+5 - Cuando se comience con la creación de un módulo, para ser considerado modulo, deberá ser evaluado con las siguientes pautas:
+    a- Debe realizar una acción y tener propiedades únicas. Para eso nos preguntaremos:
+        - Qué acción realiza?
+        - Qué propiedades tiene? (atributos)
+        - Qué se espera como resultado?
+        - Sólo realiza esa tarea o se solapa con otros módulos? Si se solapa con otros modulos entonces no debe ser modulo, sino una funcionalidad del modulo al que solapa.
+        - Tiene funciones específicas?
+        - Devuelve datos específicos?
+    b- El módulo debe poder entregar información a otros modulos si aquellos requieren de dicha información aunque no sea función del módulo solicitante. (interoperatividad)
+    c- Se seguirá la consigna de UNIX, haz una tarea pero hazla bien y con la premisa KISS (keep it simple stupid).
+    d- Las funciones deben ser claras y concisas
+    e- No realizar código spaghetti, si una función no se puede subdividir en pequeñas funciones, está mal diseñada.
+
+6 - Cada modulo contendrá su propio directorio con su nombre propio y dentro contendrá los archivos html, que hacen a ese modulo, ejemplo: formularios, tablas propias, etc.
+    También estarán los respectivos archivos js, encargados de manejar la data que recibirán o enviarán al backend.
+    Es imperativo que todo esté separado en compartimientos estancos, para facilitar la comprensión del proyecto y su interoperatividad.
+    Cada archivo reflejará una tarea determinada, si es un formulario se nombrará, ejemplo: gm_form_users.html, si es una tabla, gm_table_users.html. Y el archivo js que
+        maneje la interoperatividad entre front y back se nombrará con el nombre genérico del módulo, ejemplo: gm_users.js
+
+7 - El backend estará dividido en dos directorios "system" y "bussiness".
+        * System no debe ser tocado para nada, ya que es el core del sistema base.
+        * Bussiness es donde irá toda la lógica de Global Manager.
+        * Cada modulo será nombrado con la siguiente nomenclatura: modulo_service.c/.h . Todo lo que lleve el sufijo "_service" pertenece a la lógica de negocios.
+
+8 - Todo lo que se programe, ya sea backend o frontend, debe estar pensado para la escalabilidad futura.
+
+9 - Todo lo que se programe debe pararse sobre la base de la seguridad ante todo, tomando la filosofía UNIX / FreeBSD (Se contruye para que no se rompa nunca).
+
+10 - Todo lo que tenga que ver con el frontend, debe tener la filofía que puede ser que frente al programa se siente alguien que no sabe nada de informática ni de sistemas.
+        La experiencia de usuario debe hacer que el usuario del sistema quiera usarlo y que cada función que realice por pantalla, sea simple, intuitiva y con resultados satisfactorios.
+        Los mensajes que el sistema entragará al usuario deben ser comprensibles y que ayuden a resolver problemas y no que generen más problemas.
+        El apartado frontend (interfaz de isuario) deberá tener la posibilidad que el usuario pueda cambiar entre idiomas, español, inglés en principio,
+            por lo tanto desde los cimientos se construirá para que pueda soportar paquetes de idiomas.
+

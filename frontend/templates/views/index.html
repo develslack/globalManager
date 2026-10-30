@@ -4,73 +4,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Global Manager - Acceso</title>
-    <!-- Los estilos vuelven a estar centralizados en sus archivos -->
-    <link rel="stylesheet" href="views/CoreUI/css/core.css">
-    <link rel="stylesheet" href="views/CoreUI/css/navbar-index.css">
-    <link rel="stylesheet" href="views/CoreUI/css/forms.css">
-    <link rel="stylesheet" href="views/CoreUI/css/icons-basic.css">
-    <link rel="stylesheet" href="views/CoreUI/css/buttons.css">
 
+    <!-- Hojas de estilo troncales -->
+    <link rel="stylesheet" href="views/CoreUI/css/core.css">
+    <link rel="stylesheet" href="views/CoreUI/css/forms.css">
+    <link rel="stylesheet" href="views/CoreUI/css/navbar-index.css">
 </head>
 <body class="auth-body">
 
-    <!-- Barra GNOME fija y hardcodeada -->
-    <header class="gnome-topbar">
-        <div class="gnome-topbar-left">
-            <span class="system-brand">Global Manager <span class="sys-version">v1.0</span></span>
-        </div>
+    <!-- Navbar superior GNOME -->
+    <div id="auth-header-container"></div>
 
-        <div class="gnome-topbar-center">
-            <span class="system-status">Sistemas de Gestión en Línea</span>
-        </div>
-
-        <div class="gnome-topbar-right">
-            <!-- Estructura restaurada para el Menú Desplegable con Hover -->
-            <div class="gnome-menu-dropdown">
-                <button class="gnome-menu-trigger">
-                    <span class="icon icon-accesories-preferences-system-login icon-lg"></span>
-                    <span>Sesión</span>
-                    <!-- Icono de flecha hacia abajo -->
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M6 9l6 6 6-6"/>
-                    </svg>
-                </button>
-                <div class="gnome-dropdown-content">
-                    <a href="/login" data-route="login" class="gnome-dropdown-item">
-                        <span class="icon icon-status-dialog-password icon-lg"></span>
-                        <span>Login</span>
-                    </a>
-                    <a href="/registro" data-route="registro" class="gnome-dropdown-item">
-                        <span class="icon icon-actions-list-add-user icon-lg"></span>
-                        <span>Registro</span>
-                    </a>
-                    <a href="/recupero" data-route="recupero" class="gnome-dropdown-item">
-                        <span class="icon icon-accesories-preferences-desktop-user-password icon-lg"></span>
-                        <span>Password</span>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <!-- Contenedor central (Aquí adentro el CoreUI inyecta el formulario) -->
+    <!-- Viewport dinámico para Login / Registro / Password -->
     <div class="auth-wrapper">
-        <main id="app-view">
-            <!-- El core inyectará el login aquí -->
-        </main>
+        <main id="app-view"></main>
     </div>
 
+    <!-- 1. Scripts Troncales del Framework CoreUI -->
     <script src="views/CoreUI/js/libcore.js"></script>
     <script src="views/CoreUI/js/handler.js"></script>
+
+    <!-- 2. Paquete de Idiomas e i18n -->
+    <script src="views/global_manager/i18n/lang_es.js"></script>
+    <script src="views/global_manager/i18n/gm_i18n.js"></script>
+
+    <!-- 3. Scripts de Lógica Específica del Proyecto Global Manager -->
+    <script src="views/global_manager/logic/gm_login.js"></script>
+    <script src="views/global_manager/logic/gm_register.js"></script>
+    <script src="views/global_manager/logic/gm_password.js"></script>
+
+    <!-- 4. Cargador Troncal de App -->
     <script src="views/logic/app/logic.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Cargar la barra superior
+            fetch('views/logic/components/navbar-index.html')
+                .then(res => res.text())
+                .then(html => {
+                    document.getElementById('auth-header-container').innerHTML = html;
+                })
+                .catch(err => console.error('[Index] Error al cargar navbar:', err));
+
+            // Inicializar el enrutador de entrada CoreUI
             CoreUI.init({
                 viewContainerId: 'app-view',
                 viewsFolder: 'views/logic/components/',
-                defaultView: 'login',
-                baseRoute: '/'
+                defaultView: 'login'
             }, AppLogic);
         });
     </script>

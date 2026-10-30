@@ -1,49 +1,42 @@
 <div class="auth-container">
     <div class="auth-header">
-        <h1>Registro</h1>
-        <p>Ingrese datos solicitados a continuación</p>
+        <h1 data-i18n="auth_register_title">Registro de Usuario</h1>
+        <p data-i18n="auth_register_subtitle">Complete los campos para registrarse</p>
     </div>
-    <form id="form-registro">
+
+    <div id="register-alert" class="alert alert-danger" style="display: none;"></div>
+
+    <form id="form-register">
         <div class="form-group">
-            <label class="form-label">Nombre y Apellido</label>
-            <input type="text" class="form-control" id="nombre" required placeholder="Ingrese su Nombre y Apellido">
+            <label class="form-label" for="input-register-name" data-i18n="auth_name_label">Nombre Completo</label>
+            <input type="text" id="input-register-name" class="form-control" required placeholder="Nombre Apellido">
         </div>
 
         <div class="form-group">
-            <label class="form-label">Email</label>
-            <input type="email" class="form-control" id="email" required placeholder="Ingrese su email">
+            <label class="form-label" for="input-register-email" data-i18n="auth_email_label">Correo Electrónico</label>
+            <input type="email" id="input-register-email" class="form-control" required placeholder="usuario@dominio.com">
         </div>
 
-         <div class="form-group">
-            <label class="form-label" for="pass_1">Contraseña</label>
+        <div class="form-group">
+            <label class="form-label" for="input-register-pass1" data-i18n="auth_password_label">Contraseña</label>
             <div class="input-embedded">
-                <input type="password" id="pass_1" class="form-control" required>
-
-                <button type="button"
-                        class="btn-input-action" onclick="LibCore.togglePassword('pass_1', this)"
-                        data-core-toggle="password"
-                        data-target="input-pass"
-                        title="Mostrar/Ocultar contraseña">
+                <input type="password" id="input-register-pass1" class="form-control" required placeholder="••••••••">
+                <button type="button" class="btn-input-action" onclick="LibCore.togglePassword('input-register-pass1', this)">
                     <span class="icon icon-actions-layer-visible-on icon-sm"></span>
                 </button>
             </div>
         </div>
 
         <div class="form-group">
-            <label class="form-label" for="pass_2">Repita Contraseña</label>
+            <label class="form-label" for="input-register-pass2" data-i18n="auth_confirm_password_label">Confirmar Contraseña</label>
             <div class="input-embedded">
-                <input type="password" id="pass_2" class="form-control" required>
-
-                <button type="button"
-                        class="btn-input-action" onclick="LibCore.togglePassword('pass_2', this)"
-                        data-core-toggle="password"
-                        data-target="input-pass"
-                        title="Mostrar/Ocultar contraseña">
+                <input type="password" id="input-register-pass2" class="form-control" required placeholder="••••••••">
+                <button type="button" class="btn-input-action" onclick="LibCore.togglePassword('input-register-pass2', this)">
                     <span class="icon icon-actions-layer-visible-on icon-sm"></span>
                 </button>
             </div>
         </div>
-        <button type="submit" class="btn">Aceptar</button>
+
+        <button type="submit" class="btn btn-primary" data-i18n="auth_register_btn">Registrarse</button>
     </form>
-    <a href="/recupero" class="text-link" data-route="recupero">¿Olvidó su contraseña?</a>
 </div>

@@ -1,69 +1,82 @@
-// login.js
-console.log("Login");
+/**
+ * Global Manager - gm_login.js
+ * Core Login Logic with Dynamic API Base URL & i18n
+ */
 
-function initLoginForm() {
-  const form = document.getElementById("form-login");
+console.log("Module login load...");
 
-  if (!form) {
-    console.error("⚠️ No se encontró el formulario #form-login");
-    return;
-  }
+const GMLogin = (function() {
 
-  console.log("✅ Formulario LOGIN encontrado, configurando submit...");
+    function init() {
+        const formLogin = document.getElementById('form-login');
+        if (formLogin) {
+            formLogin.addEventListener('submit', handleLoginSubmit);
+        }
 
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault(); // 🔒 Evita que recargue el index.html
-    console.log("🚀 Enviando formulario login...");
-
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-
-    $('#email').val('');
-    $('#password').val('');
-    //console.log(email);
-    //console.log(password);
-
-    try {
-      const response = await fetch(window.API_BASE_URL +"/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: `email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`
-      });
-
-      const data = await response.json();
-      console.log("📦 Respuesta del backend:", data);
-      console.log("HTTP Status:", response.status);
-      console.log("response.ok:", response.ok);
-      console.log("data.status:", data.status);
-
-      if (response.ok && data.status === "success") {
-        console.log("Ingresando...");
-        var mensaje = `<br><div class="alert alert-success alert-dismissible">
-                                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                                        <p align=center><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Bienvenido/a, aguarde un instante...</p></div>`;
-        document.getElementById('message_login').innerHTML = mensaje;
-        //alert("Bienvenido. Aguarde un instante...");
-        localStorage.setItem("user", JSON.stringify(data.user));
-        setTimeout(function() { $(".close").click(); }, 3000);
-        setTimeout(function() { window.location.href = "/dashboard.html"; }, 4000);
-
-
-      } else {
-          var mensaje = `<br><div class="alert alert-danger alert-dismissible">
-                                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                                        <p align=center><span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span> ${data.message || "❌  Error Desconocido"}</p></div>`;
-          document.getElementById('message_login').innerHTML = mensaje;
-          setTimeout(function() { $(".close").click(); }, 4000);
-      }
-    } catch (err) {
-      console.error("💥 Error en fetch:", err);
-      alert("No se pudo conectar al servidor backend");
+        if (typeof GMi18n !== 'undefined') {
+            GMi18n.translateDOM();
+        }
     }
-  });
-}
 
-// Esperar a que el DOM del fragmento esté cargado
-document.addEventListener("DOMContentLoaded", initLoginForm);
+    async function handleLoginSubmit(e) {
+        e.preventDefault();
 
-// Fallback por si el fragmento fue insertado dinámicamente (sin nuevo DOMContentLoaded)
-setTimeout(initLoginForm, 500);
+        const emailInput = document.getElementById('input-email');
+        const passwordInput = document.getElementById('input-password');
+        const alertBox = document.getElementById('login-alert');
+
+        if (!emailInput || !passwordInput) return;
+
+        const email = encodeURIComponent(emailInput.value.trim());
+        const password = encodeURIComponent(passwordInput.value);
+
+        const payload = `email=${email}&password=${password}`;
+
+        // URL base dinámica de la API
+        const baseUrl = window.API_BASE_URL || '';
+
+        try {
+            const response = await fetch(`${baseUrl}/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: payload
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.status === 'success') {
+                localStorage.setItem('gm_token', result.user.token);
+                localStorage.setItem('gm_user', JSON.stringify(result.user));
+
+                if (typeof LibCore !== 'undefined' && LibCore.toast) {
+                    LibCore.toast(GMi18n.t('auth_login_success', 'Autenticación exitosa. Redirigiendo...'), 'success');
+                }
+
+                setTimeout(() => {
+                    window.location.href = '/dashboard';
+                }, 1000);
+            } else {
+                const errorMsg = result.message || GMi18n.t('auth_login_error_credentials', 'Las credenciales ingresadas son incorrectas.');
+                showError(alertBox, errorMsg);
+            }
+        } catch (err) {
+            console.error('[GM-Login] Server or network error:', err);
+            showError(alertBox, GMi18n.t('auth_login_error_server', 'No se pudo conectar con el servidor backend.'));
+        }
+    }
+
+    function showError(element, message) {
+        if (element) {
+            element.textContent = message;
+            element.style.display = 'block';
+        } else if (typeof LibCore !== 'undefined' && LibCore.toast) {
+            LibCore.toast(message, 'danger');
+        }
+    }
+
+    return {
+        init: init
+    };
+})();

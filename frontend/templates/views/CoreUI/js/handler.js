@@ -1,15 +1,48 @@
-/**
- * chassisCore - handler.js
- * Motor Core UI de enrutamiento SPA con URLs limpias (History API).
- */
+// =========================================================================
+// CONFIGURACIÓN DE ENTORNO (DEV vs PROD)
+// =========================================================================
+const isDev = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
 
+window.API_BASE_URL = isDev ? 'http://localhost:5000' : '/api';
+
+// Ruta dinámica para las vistas HTML
+window.VIEWS_PATH = isDev ? '/views' : '';
+
+console.log("🌐 Entorno detectado. URL Base de la API:", window.API_BASE_URL);
+
+// =========================================================================
+// INDICADOR VISUAL DE ENTORNO (FLOTANTE)
+// =========================================================================
+const envBadge = document.createElement("div");
+
+envBadge.innerHTML = isDev
+    ? '<span class="glyphicon glyphicon-wrench"></span> ENTORNO DESARROLLO'
+    : '<span class="glyphicon glyphicon-globe"></span> ENTORNO PRODUCCIÓN';
+
+envBadge.style.position = 'fixed';
+envBadge.style.bottom = '15px';
+envBadge.style.right = '15px';
+envBadge.style.padding = '8px 15px';
+envBadge.style.borderRadius = '20px';
+envBadge.style.color = '#fff';
+envBadge.style.backgroundColor = isDev ? '#d35400' : '#27ae60'; // Naranja Dev, Verde Prod
+envBadge.style.zIndex = '9999';
+envBadge.style.fontSize = '12px';
+envBadge.style.fontWeight = 'bold';
+envBadge.style.boxShadow = '0 4px 6px rgba(0,0,0,0.3)';
+envBadge.style.pointerEvents = 'none';
+
+document.body.appendChild(envBadge);
+
+// =========================================================================
+// CoreUI Base Handler
+// =========================================================================
 const CoreUI = (function() {
     let config = {
         viewContainerId: 'app-view',
-        viewsFolder: 'views/logic/components/',
+        viewsFolder: 'frontend/templates/views/logic/components/',
         defaultView: 'login',
-        baseRoute: '/',            // Ruta base limpia ('/' o '/dashboard')
-        preserveBaseRoute: false   // En 'true', fija la URL en baseRoute al navegar subcomponentes
+        baseRoute: '/'
     };
 
     let businessLogic = null;
@@ -18,10 +51,8 @@ const CoreUI = (function() {
         config = Object.assign({}, config, userConfig);
         businessLogic = appLogicModule;
 
-        // 1. Limpiar .html de la barra de direcciones si se ingresó directamente
         cleanAddressBar();
 
-        // 2. Escuchar clics globales en elementos con data-route
         document.addEventListener('click', function(e) {
             const target = e.target.closest('[data-route]');
             if (target) {
@@ -31,118 +62,63 @@ const CoreUI = (function() {
             }
         });
 
-        // 3. Manejar botones del navegador (Atrás / Adelante)
         window.addEventListener('popstate', function(e) {
             const viewName = (e.state && e.state.view) ? e.state.view : getRouteFromUrl() || config.defaultView;
             loadView(viewName, true);
         });
 
-        // 4. Cargar la vista inicial
-        const initialView = config.preserveBaseRoute ? config.defaultView : (getRouteFromUrl() || config.defaultView);
+        const initialView = getRouteFromUrl() || config.defaultView;
         loadView(initialView, true);
     }
 
-    /**
-     * Limpia la barra de direcciones eliminando sufijos .html
-     */
     function cleanAddressBar() {
         let path = window.location.pathname;
-
-        if (path.endsWith('/index.html')) {
-            path = path.replace(/\/index\.html$/, '/') || '/';
-            history.replaceState({ view: config.defaultView }, '', path);
-        } else if (path.endsWith('/dashboard.html')) {
-            path = path.replace(/\/dashboard\.html$/, '/dashboard');
-            history.replaceState({ view: config.defaultView }, '', path);
+        if (path.endsWith('/index.html') || path === '/index') {
+            history.replaceState({ view: config.defaultView }, '', config.baseRoute);
         }
     }
 
-    /**
-     * Extrae el nombre de la vista desde la URL pública
-     */
     function getRouteFromUrl() {
-        let path = window.location.pathname;
-        path = path.replace(/\.html$/, '');
+        let path = window.location.pathname.replace(/\.html$/, '');
         const cleanPath = path.replace(/^\/|\/$/g, '');
-
-        if (!cleanPath || cleanPath === 'dashboard') {
-            return null;
-        }
+        if (!cleanPath || cleanPath === 'index') return null;
         return cleanPath;
     }
 
-    /**
-     * Cambia la vista e inyecta el HTML parcial sin ensuciar la URL
-     */
     function navigateTo(viewName) {
-        let newUrl = config.baseRoute;
-
-        if (!config.preserveBaseRoute) {
-            // Modo Auth: Muestra URLs limpias como /login, /registro, /password
-            newUrl = (viewName === config.defaultView) ? config.baseRoute : `/${viewName}`;
-        }
-
-        // Actualizar URL solo si cambia
+        const newUrl = (viewName === config.defaultView) ? config.baseRoute : `/${viewName}`;
         if (window.location.pathname !== newUrl) {
             history.pushState({ view: viewName }, '', newUrl);
         }
-
         loadView(viewName, true);
     }
 
-    /**
-     * Carga asíncrona del componente parcial desde views/logic/components/
-     */
-     async function loadView(viewName, triggerHook = true) {
+    async function loadView(viewName, triggerHook = true) {
         const container = document.getElementById(config.viewContainerId);
         if (!container) return;
 
         try {
-            // Transición de salida rápida
-            container.style.opacity = '0';
-            container.style.transform = 'translateY(6px)';
-            container.style.transition = 'opacity 0.12s ease, transform 0.12s ease';
-
             const response = await fetch(`${config.viewsFolder}${viewName}.html`);
             if (!response.ok) throw new Error(`HTTP error ${response.status}`);
 
             const htmlContent = await response.text();
+            container.innerHTML = htmlContent;
 
-            setTimeout(() => {
-                container.innerHTML = htmlContent;
-
-                // Transición de entrada con leve desplazamiento hacia arriba
-                container.style.opacity = '1';
-                container.style.transform = 'translateY(0)';
-
-                sessionStorage.setItem('chassis_current_view', viewName);
-                updateActiveNavLinks(viewName);
-
-                if (triggerHook && businessLogic && typeof businessLogic.onViewLoaded === 'function') {
-                    businessLogic.onViewLoaded(viewName);
-                }
-            }, 120);
-
+            if (triggerHook && businessLogic && typeof businessLogic.onViewLoaded === 'function') {
+                businessLogic.onViewLoaded(viewName);
+            }
         } catch (error) {
-            console.error(`[CoreUI] Error al cargar la vista '${viewName}':`, error);
+            console.error(`[CoreUI] Error loading view '${viewName}':`, error);
         }
     }
 
-    /**
-     * Mantiene sincronizada la clase .active en botones y enlaces del sidebar/navbar
-     */
-    function updateActiveNavLinks(viewName) {
-        document.querySelectorAll('[data-route]').forEach(link => {
-            if (link.getAttribute('data-route') === viewName) {
-                link.classList.add('active');
-            } else {
-                link.classList.remove('active');
-            }
-        });
+    function handoverToDashboard() {
+        window.location.href = '/dashboard';
     }
 
     return {
         init: init,
-        navigate: navigateTo
+        navigate: navigateTo,
+        handoverToDashboard: handoverToDashboard
     };
 })();

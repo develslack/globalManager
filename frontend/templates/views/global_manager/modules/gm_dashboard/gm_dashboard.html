@@ -1,1 +1,76 @@
- 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Global Manager</title>
+    <link rel="stylesheet" href="/CoreUI/css/core.css">
+    <link rel="stylesheet" href="/CoreUI/css/navbar-dashboard.css">
+    <link rel="stylesheet" href="views/CoreUI/css/buttons.css">
+    <link rel="stylesheet" href="views/CoreUI/css/modals.css">
+    <link rel="stylesheet" href="views/CoreUI/css/toasts.css">
+    <link rel="stylesheet" href="views/CoreUI/css/panels.css">
+    <link rel="stylesheet" href="views/CoreUI/css/jumbotron.css">
+    <link rel="stylesheet" href="views/CoreUI/css/alerts.css">
+    <link rel="stylesheet" href="views/CoreUI/css/badges.css">
+    <link rel="stylesheet" href="views/CoreUI/css/progress.css">
+    <link rel="stylesheet" href="views/CoreUI/css/list-groups.css">
+    <link rel="stylesheet" href="views/CoreUI/css/collapse.css">
+    <link rel="stylesheet" href="views/CoreUI/css/tabs.css">
+    <link rel="stylesheet" href="views/CoreUI/css/inputs.css">
+    <link rel="stylesheet" href="views/CoreUI/css/tooltips.css">
+    <link rel="stylesheet" href="views/CoreUI/css/popovers.css">
+    <link rel="stylesheet" href="views/CoreUI/css/tables.css">
+    <link rel="stylesheet" href="views/CoreUI/css/loaders.css">
+    <link rel="stylesheet" href="views/CoreUI/css/animations.css">
+    <link rel="stylesheet" href="views/CoreUI/css/animations-advanced.css">
+    <link rel="stylesheet" href="views/CoreUI/css/themes.css">
+</head>
+<body class="dashboard-body">
+
+    <div class="app-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Global Manager</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" data-route="gm_users" class="nav-item" data-i18n="menu_users">Usuarios</a>
+                <a href="#" data-route="gm_stock" class="nav-item" data-i18n="menu_stock">Stock</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content Viewport -->
+        <div class="main-wrapper">
+            <header class="topbar">
+                <span class="view-title">Global Manager</span>
+                <button id="btn-logout" class="btn btn-secondary" data-i18n="ui_logout">Cerrar Sesión</button>
+            </header>
+
+            <!-- Dynamic Viewport -->
+            <main id="dashboard-view" class="content-viewport">
+            </main>
+        </div>
+    </div>
+
+    <!-- 1. Troncales Framework CoreUI -->
+    <script src="/CoreUI/js/libcore.js"></script>
+    <script src="/CoreUI/js/tables.js"></script>
+
+    <!-- 2. Troncales i18n & Global Manager Core -->
+    <script src="/global_manager/i18n/langpack_es.js"></script>
+    <script src="/global_manager/i18n/gm_i18n.js"></script>
+    <script src="/global_manager/logic/gm_handler.js"></script>
+
+    <!-- 3. Inicialización del Handler Global Manager -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            GMHandler.init({
+                viewContainerId: 'dashboard-view',
+                modulesFolder: '/global_manager/modules/',
+                defaultView: 'gm_users',
+                baseRoute: '/dashboard'
+            });
+        });
+    </script>
+</body>
+</html>
