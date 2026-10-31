@@ -56,7 +56,7 @@ const GMLogin = (function() {
 
                 setTimeout(() => {
                     window.location.href = '/dashboard';
-                }, 1000);
+                }, 2000);
             } else {
                 const errorMsg = result.message || GMi18n.t('auth_login_error_credentials', 'Las credenciales ingresadas son incorrectas.');
                 showError(alertBox, errorMsg);

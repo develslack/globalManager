@@ -19,35 +19,32 @@ backend/src/system/users.h:10:13: aviso: ‘route_post_register’ se declaró �
    10 | static void route_post_register(int client, const char *body);
       |             ^~~~~~~~~~~~~~~~~~~
 En el fichero incluido desde backend/src/system/routes.c:10:
-backend/src/system/session_manager.h:24:13: aviso: ‘trim_string’ se declaró ‘static’ pero nunca se define [-Wunused-function]
-   24 | static void trim_string(char *str);
+backend/src/system/session_manager.h:20:13: aviso: ‘trim_string’ se declaró ‘static’ pero nunca se define [-Wunused-function]
+   20 | static void trim_string(char *str);
       |             ^~~~~~~~~~~
-En el fichero incluido desde backend/src/system/routes.c:10:
-backend/src/system/session_manager.h:52:13: aviso: ‘route_post_set_session_context’ se declaró ‘static’ pero nunca se define [-Wunused-function]
-   52 | static void route_post_set_session_context(int client, const char* body);
+backend/src/system/session_manager.h:48:13: aviso: ‘route_post_set_session_context’ se declaró ‘static’ pero nunca se define [-Wunused-function]
+   48 | static void route_post_set_session_context(int client, const char* body);
       |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-backend/src/system/session_manager.h:53:13: aviso: ‘route_post_logout_session’ se declaró ‘static’ pero nunca se define [-Wunused-function]
-   53 | static void route_post_logout_session(int client, const char* body);
+backend/src/system/session_manager.h:49:13: aviso: ‘route_post_logout_session’ se declaró ‘static’ pero nunca se define [-Wunused-function]
+   49 | static void route_post_logout_session(int client, const char* body);
       |             ^~~~~~~~~~~~~~~~~~~~~~~~~
 En el fichero incluido desde backend/src/bussiness/users_service.c:10:
-backend/src/bussiness/../system/session_manager.h:24:13: aviso: ‘trim_string’ se declaró ‘static’ pero nunca se define [-Wunused-function]
-   24 | static void trim_string(char *str);
+backend/src/bussiness/../system/session_manager.h:20:13: aviso: ‘trim_string’ se declaró ‘static’ pero nunca se define [-Wunused-function]
+   20 | static void trim_string(char *str);
       |             ^~~~~~~~~~~
-En el fichero incluido desde backend/src/bussiness/users_service.c:10:
-backend/src/bussiness/../system/session_manager.h:52:13: aviso: ‘route_post_set_session_context’ se declaró ‘static’ pero nunca se define [-Wunused-function]
-   52 | static void route_post_set_session_context(int client, const char* body);
+backend/src/bussiness/../system/session_manager.h:48:13: aviso: ‘route_post_set_session_context’ se declaró ‘static’ pero nunca se define [-Wunused-function]
+   48 | static void route_post_set_session_context(int client, const char* body);
       |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-backend/src/bussiness/../system/session_manager.h:53:13: aviso: ‘route_post_logout_session’ se declaró ‘static’ pero nunca se define [-Wunused-function]
-   53 | static void route_post_logout_session(int client, const char* body);
+backend/src/bussiness/../system/session_manager.h:49:13: aviso: ‘route_post_logout_session’ se declaró ‘static’ pero nunca se define [-Wunused-function]
+   49 | static void route_post_logout_session(int client, const char* body);
       |             ^~~~~~~~~~~~~~~~~~~~~~~~~
 En el fichero incluido desde backend/src/main.c:11:
-backend/src/system/session_manager.h:24:13: aviso: ‘trim_string’ se declaró ‘static’ pero nunca se define [-Wunused-function]
-   24 | static void trim_string(char *str);
+backend/src/system/session_manager.h:20:13: aviso: ‘trim_string’ se declaró ‘static’ pero nunca se define [-Wunused-function]
+   20 | static void trim_string(char *str);
       |             ^~~~~~~~~~~
-En el fichero incluido desde backend/src/main.c:11:
-backend/src/system/session_manager.h:52:13: aviso: ‘route_post_set_session_context’ se declaró ‘static’ pero nunca se define [-Wunused-function]
-   52 | static void route_post_set_session_context(int client, const char* body);
+backend/src/system/session_manager.h:48:13: aviso: ‘route_post_set_session_context’ se declaró ‘static’ pero nunca se define [-Wunused-function]
+   48 | static void route_post_set_session_context(int client, const char* body);
       |             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-backend/src/system/session_manager.h:53:13: aviso: ‘route_post_logout_session’ se declaró ‘static’ pero nunca se define [-Wunused-function]
-   53 | static void route_post_logout_session(int client, const char* body);
+backend/src/system/session_manager.h:49:13: aviso: ‘route_post_logout_session’ se declaró ‘static’ pero nunca se define [-Wunused-function]
+   49 | static void route_post_logout_session(int client, const char* body);
       |             ^~~~~~~~~~~~~~~~~~~~~~~~~

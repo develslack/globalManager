@@ -9,6 +9,7 @@
 #include "users.h"
 #include "session_manager.h"
 #include "theme_handler.h"
+#include "../bussiness/users_service.h"
 
 
 
@@ -130,6 +131,7 @@ void init_routes() {
     init_auth_routes();
     init_user_routes();
     init_session_routes();
+    init_login_routes();
     init_theme_routes();
 
     // 🔥 EJECUTAMOS EL REPORTE: Una vez que todos los módulos se registraron, volcamos el estado

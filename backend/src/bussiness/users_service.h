@@ -11,7 +11,6 @@ typedef struct {
     int  id;
     char nombre[128];
     char email[128];
-    char cod_inst[5];
     int  rol_id;
     char* session_token;
 } UserData;

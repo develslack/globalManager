@@ -10,10 +10,6 @@ typedef struct {
     char token[129];
     char nombre[100];
     int rol_id;
-    char cod_inst_base[10];   // Ej: "ALL" o "ME"
-    char cod_inst_activo[10]; // Organismo actualmente sintonizado
-    char nro_lote_activo[10]; // Lote sintonizado (xxx)
-    char per_lote_activo[10]; // Período sintonizado (AAAAMM)
     long ultimo_acceso;       // Timestamp para control de inactividad
 
 }UserSession;
@@ -31,7 +27,7 @@ void session_manager_init(void);
 /**
  * @brief Crea una nueva sesión en RAM tras un login exitoso y devuelve la estructura.
  */
-UserSession* session_manager_crear(const char* nombre, int rol_id, const char* cod_inst_base, const char* token_login);
+UserSession* session_manager_crear(const char* nombre, int rol_id, const char* token_login);
 
 /**
  * @brief Busca una sesión activa en el ArrayList mediante su token de 128 bytes.
@@ -42,7 +38,7 @@ UserSession* session_manager_validar(const char* token);
 /**
  * @brief Modifica el contexto de trabajo dinámico (Organismo activo y Lote).
  */
-int session_manager_set_context(const char* token, const char* cod_inst_nuevo, const char* nro_lote_nuevo, const char* per_lote_nuevo);
+int session_manager_set_context(const char* token);
 
 /**
  * @brief Destruye la sesión en RAM (Logout).

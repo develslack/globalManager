@@ -73,7 +73,7 @@ void session_manager_init(void) {
 // ===================================================================================================================== //
 // CREACIÓN DE SESIÓN POST-LOGIN (Inyección en RAM del Kernel)
 // ===================================================================================================================== //
-UserSession* session_manager_crear(const char* nombre, int rol_id, const char* cod_inst_base, const char* token_login) {
+UserSession* session_manager_crear(const char* nombre, int rol_id, const char* token_login) {
     if (alist_sesiones_activas == NULL) return NULL;
 
     UserSession* nueva_sesion = (UserSession*)malloc(sizeof(UserSession));
@@ -90,29 +90,14 @@ UserSession* session_manager_crear(const char* nombre, int rol_id, const char* c
 
     nueva_sesion->rol_id = rol_id;
 
-    // Configuración horizontal base del usuario
-    strncpy(nueva_sesion->cod_inst_base, cod_inst_base, sizeof(nueva_sesion->cod_inst_base) - 1);
-    nueva_sesion->cod_inst_base[sizeof(nueva_sesion->cod_inst_base) - 1] = '\0';
-    trim_string(nueva_sesion->cod_inst_base);
 
-    // Si es "ALL" (Administrador Absoluto), inicia con canal limpio. Si no, se auto-cerca en su organismo de origen.
-    if (strcasecmp(nueva_sesion->cod_inst_base, "ALL") == 0) {
-        strcpy(nueva_sesion->cod_inst_activo, "");
-    } else {
-        strncpy(nueva_sesion->cod_inst_activo, nueva_sesion->cod_inst_base, sizeof(nueva_sesion->cod_inst_activo) - 1);
-        nueva_sesion->cod_inst_activo[sizeof(nueva_sesion->cod_inst_activo) - 1] = '\0';
-    }
-
-    // El lote y período de trabajo arrancan vacíos hasta ser sintonizados en Parámetros Básicos
-    strcpy(nueva_sesion->nro_lote_activo, "");
-    strcpy(nueva_sesion->per_lote_activo, "");
     nueva_sesion->ultimo_acceso = (long)time(NULL);
 
     // Guardamos de forma inmediata en nuestro ArrayList residente en RAM
     alist_sesiones_activas->add(alist_sesiones_activas, nueva_sesion);
 
-    printf("🔑 [KERNEL - SESION]: Registro en RAM Exitoso -> Usuario: [%s] | Rol: [%d] | Organismo Base: [%s]\n",
-           nueva_sesion->nombre, nueva_sesion->rol_id, nueva_sesion->cod_inst_base);
+    printf("🔑 [KERNEL - SESION]: Registro en RAM Exitoso -> Usuario: [%s] | Rol: [%d]\n",
+           nueva_sesion->nombre, nueva_sesion->rol_id);
 
     return nueva_sesion;
 }
@@ -139,38 +124,16 @@ UserSession* session_manager_validar(const char* token) {
 // ===================================================================================================================== //
 // CONMUTACIÓN DE CONTEXTO ACTIVO (Sintonizador de Organismo, Lote y Período)
 // ===================================================================================================================== //
-int session_manager_set_context(const char* token, const char* cod_inst_nuevo, const char* nro_lote_nuevo, const char* per_lote_nuevo) {
+int session_manager_set_context(const char* token) {
     UserSession* s = session_manager_validar(token);
     if (!s) {
         printf("❌ [KERNEL]: Falla de validacion de Token en RAM. Token buscando: [%s]\n", token);
         return 0;
     }
 
-    // 🛡️ CERROJO DE SEGURIDAD HORIZONTAL: Si NO es administrador, el sistema le bloquea el cambio de organismo
-    if (strcasecmp(s->cod_inst_base, "ALL") != 0) {
-        strncpy(s->cod_inst_activo, s->cod_inst_base, sizeof(s->cod_inst_activo) - 1);
-    } else if (cod_inst_nuevo != NULL && strlen(cod_inst_nuevo) > 0) {
-        strncpy(s->cod_inst_activo, cod_inst_nuevo, sizeof(s->cod_inst_activo) - 1);
-        s->cod_inst_activo[sizeof(s->cod_inst_activo) - 1] = '\0';
-        trim_string(s->cod_inst_activo);
-    }
 
-    // Seteamos el lote activo
-    if (nro_lote_nuevo != NULL && strlen(nro_lote_nuevo) > 0) {
-        strncpy(s->nro_lote_activo, nro_lote_nuevo, sizeof(s->nro_lote_activo) - 1);
-        s->nro_lote_activo[sizeof(s->nro_lote_activo) - 1] = '\0';
-        trim_string(s->nro_lote_activo);
-    }
 
-    // Seteamos el período activo del lote
-    if (per_lote_nuevo != NULL && strlen(per_lote_nuevo) > 0) {
-        strncpy(s->per_lote_activo, per_lote_nuevo, sizeof(s->per_lote_activo) - 1);
-        s->per_lote_activo[sizeof(s->per_lote_activo) - 1] = '\0';
-        trim_string(s->per_lote_activo);
-    }
-
-    printf("🔄 [KERNEL - SESION]: Contexto actualizado -> User: [%s] | Org: [%s] | Lote: [%s] | Período: [%s]\n",
-           s->nombre, s->cod_inst_activo, s->nro_lote_activo, s->per_lote_activo);
+    printf("🔄 [KERNEL - SESION]: Contexto actualizado -> User: [%s]\n", s->nombre);
 
     return 1;
 }
@@ -200,39 +163,25 @@ void session_manager_destruir(const char* token) {
 // ===================================================================================================================== //
 static void route_post_set_session_context(int client, const char* body) {
     char token[256], d_token[256];
-    char cod_inst_nuevo[32], d_cod_inst_nuevo[32];
-    char nro_lote_nuevo[32], d_nro_lote_nuevo[32];
-    char per_lote_nuevo[32], d_per_lote_nuevo[32];
 
     session_get_value(body, "token", token, sizeof(token));
     url_decode(d_token, token);
     trim_string(d_token); // 🛡️ Saneamos espacios o saltos de línea al final del token
 
-    session_get_value(body, "cod_inst", cod_inst_nuevo, sizeof(cod_inst_nuevo));
-    url_decode(d_cod_inst_nuevo, cod_inst_nuevo);
-    trim_string(d_cod_inst_nuevo);
-
-    session_get_value(body, "nro_lote", nro_lote_nuevo, sizeof(nro_lote_nuevo));
-    url_decode(d_nro_lote_nuevo, nro_lote_nuevo);
-    trim_string(d_nro_lote_nuevo);
-
-    session_get_value(body, "per_lote", per_lote_nuevo, sizeof(per_lote_nuevo));
-    url_decode(d_per_lote_nuevo, per_lote_nuevo);
-    trim_string(d_per_lote_nuevo);
 
     if (strlen(d_token) == 0) {
         send_response(client, "400 Bad Request", "application/json", "{\"status\":\"error\",\"message\":\"Token de sesión inválido o vacío\"}");
         return;
     }
 
-    if (session_manager_set_context(d_token, d_cod_inst_nuevo, d_nro_lote_nuevo, d_per_lote_nuevo)) {
+    if (session_manager_set_context(d_token)) {
         // Devolvemos el objeto completo con la tripleta de datos y credenciales
         UserSession* s = session_manager_validar(d_token);
         char response_json[512];
         snprintf(response_json, sizeof(response_json),
                  "{\"status\":\"ok\",\"message\":\"Contexto de sesión actualizado en RAM\",\"user\":{"
-                 "\"nombre\":\"%s\",\"token\":\"%s\",\"cod_inst\":\"%s\",\"cod_inst_activo\":\"%s\",\"lote_activo\":\"%s\",\"periodo_activo\":\"%s\"}}",
-                 s->nombre, s->token, s->cod_inst_base, s->cod_inst_activo, s->nro_lote_activo, s->per_lote_activo);
+                 "\"nombre\":\"%s\",\"token\":\"%s\"}}",
+                 s->nombre, s->token);
 
         send_response(client, "200 OK", "application/json", response_json);
     } else {

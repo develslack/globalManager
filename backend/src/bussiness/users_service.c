@@ -117,15 +117,16 @@ static void route_get_user_by_id(int client, const char *body) {
 // ===================================================================================================================== //
 
 int users_service_register(const char *body, char *error_msg, int error_size) {
-    char nombre[128], email[128], password_1[128], password_2[128];
-    char decoded_email[256], decoded_nombre[256];
 
-    get_value(body, "nombre", nombre, sizeof(nombre));
+    char name[128], email[128], password_1[128], password_2[128];
+    char decoded_email[256], decoded_name[256];
+
+    get_value(body, "name", name, sizeof(name));
     get_value(body, "email", email, sizeof(email));
     get_value(body, "password_1", password_1, sizeof(password_1));
     get_value(body, "password_2", password_2, sizeof(password_2));
 
-    if (strlen(nombre) == 0 || strlen(email) == 0 || strlen(password_1) == 0 || strlen(password_2) == 0) {
+    if (strlen(name) == 0 || strlen(email) == 0 || strlen(password_1) == 0 || strlen(password_2) == 0) {
         snprintf(error_msg, error_size, "missing required fields");
         return 0;
     }
@@ -136,10 +137,10 @@ int users_service_register(const char *body, char *error_msg, int error_size) {
     }
 
     url_decode(decoded_email, email);
-    url_decode(decoded_nombre, nombre);
+    url_decode(decoded_name, name);
 
     // 1. Validar si ya existe el usuario/email
-    const char *check_params[] = { decoded_nombre, decoded_email };
+    const char *check_params[] = { decoded_name, decoded_email };
     DB_DataSet ds_check;
 
     if (db_call_sp("SP_CHECK_USER_EXISTS", check_params, 2, &ds_check) == 0 && ds_check.num_rows > 0) {
@@ -159,7 +160,7 @@ int users_service_register(const char *body, char *error_msg, int error_size) {
     hash_password(password_1, "", hash);
 
     // 3. Insertar nuevo usuario mediante SP
-    const char *reg_params[] = { decoded_nombre, decoded_email, hash, "0" };
+    const char *reg_params[] = { decoded_name, decoded_email, hash, "2" };
     DB_DataSet ds_reg;
 
     if (db_call_sp("SP_REGISTER_USER", reg_params, 4, &ds_reg) != 0) {
@@ -322,7 +323,7 @@ static void route_post_login(int client, const char *body) {
     user.session_token = tokenGenerator();
 
     if (users_service_login(email, password, error_msg, &user)) {
-        UserSession* sesion_creada = session_manager_crear(user.nombre, user.rol_id, user.cod_inst, user.session_token);
+        UserSession* sesion_creada = session_manager_crear(user.nombre, user.rol_id, user.session_token);
 
         if (sesion_creada != NULL) {
             char response[1024];

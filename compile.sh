@@ -42,7 +42,7 @@ if [ -f backend/bin/globalManager ]; then
     case $resp in
         1)
             clear
-            echo "Iniciando chassisCore en modo desarrollo..."
+            echo "Iniciando Global Manager en modo desarrollo..."
             cd backend/bin/
             ./globalManager
             ;;

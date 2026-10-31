@@ -54,7 +54,7 @@ const LibCore = (function() {
 
 
     // --- Sistema de Notificaciones (Toasts) ---
-    function toast(message, type = 'default', title = '', duration = 4000) {
+    function toast(message, type = 'default', title = '', duration = 3000) {
         let container = document.getElementById('toast-container');
         if (!container) {
             container = document.createElement('div');

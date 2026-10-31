@@ -49,6 +49,8 @@
 .icon-accesories-system-users          { background-image: url('../assets/icons/apps/system-users.png'); }
 .icon-accesories-preferences-system-login          { background-image: url('../assets/icons/apps/preferences-system-login.png'); }
 .icon-accesories-preferences-desktop-user-password          { background-image: url('../assets/icons/apps/preferences-desktop-user-password.png'); }
+.icon-accesories-preferences-desktop-cryptography          { background-image: url('../assets/icons/apps/preferences-desktop-cryptography.png'); }
+.icon-accesories-utilities-desktop-extra          { background-image: url('../assets/icons/apps/utilities-desktop-extra.png'); }
 
 /* status icons */
 .icon-status-dialog-password    { background-image: url('../assets/icons/status/dialog-password.png'); }

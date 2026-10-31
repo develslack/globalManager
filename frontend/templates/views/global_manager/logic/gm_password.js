@@ -19,9 +19,9 @@ const GMPassword = (function() {
     async function handlePasswordSubmit(e) {
         e.preventDefault();
 
-        const emailInput = document.getElementById('input-password-email');
-        const pass1Input = document.getElementById('input-password-pass1');
-        const pass2Input = document.getElementById('input-password-pass2');
+        const emailInput = document.getElementById('email');
+        const pass1Input = document.getElementById('pass_1');
+        const pass2Input = document.getElementById('pass_2');
         const alertBox = document.getElementById('password-alert');
 
         if (!emailInput || !pass1Input || !pass2Input) return;
@@ -46,7 +46,7 @@ const GMPassword = (function() {
         const baseUrl = window.API_BASE_URL || '';
 
         try {
-            const response = await fetch(`${baseUrl}/password/update`, {
+            const response = await fetch(`${baseUrl}/password`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'

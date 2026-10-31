@@ -29,10 +29,10 @@ const GMRegister = (function() {
 
         const name = encodeURIComponent(nameInput.value.trim());
         const email = encodeURIComponent(emailInput.value.trim());
-        const pass1 = encodeURIComponent(pass1Input.value);
-        const pass2 = encodeURIComponent(pass2Input.value);
+        const password_1 = encodeURIComponent(pass1Input.value);
+        const password_2 = encodeURIComponent(pass2Input.value);
 
-        if (!name || !email || !pass1 || !pass2) {
+        if (!name || !email || !password_1 || !password_2) {
             showError(alertBox, GMi18n.t('auth_register_empty_fields', 'Todos los campos son obligatorios.'));
             return;
         }
@@ -42,13 +42,13 @@ const GMRegister = (function() {
             return;
         }
 
-        const payload = `nombre=${name}&email=${email}&password_1=${pass1}&password_2=${pass2}`;
+        const payload = `name=${name}&email=${email}&password_1=${password_1}&password_2=${password_2}`;
 
         // URL base dinámica de la API
         const baseUrl = window.API_BASE_URL || '';
 
         try {
-            const response = await fetch(`${baseUrl}/register`, {
+            const response = await fetch(`${baseUrl}/users/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
@@ -59,6 +59,7 @@ const GMRegister = (function() {
             const result = await response.json();
 
             if (response.ok && result.status === 'success') {
+
                 if (typeof LibCore !== 'undefined' && LibCore.toast) {
                     LibCore.toast(GMi18n.t('auth_register_success', 'Registro completado con éxito. Inicie sesión.'), 'success');
                 }
@@ -66,7 +67,9 @@ const GMRegister = (function() {
                 if (typeof CoreUI !== 'undefined' && typeof CoreUI.navigate === 'function') {
                     CoreUI.navigate('login');
                 }
+
             } else {
+
                 const errorMsg = result.message || GMi18n.t('auth_register_error', 'Error al procesar el registro.');
                 showError(alertBox, errorMsg);
             }
