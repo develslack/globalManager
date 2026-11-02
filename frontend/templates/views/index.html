@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Global Manager - Acceso</title>
 
-    <!-- Hojas de estilo troncales -->
+    <!-- Hojas de estilo troncales del Framework -->
     <link rel="stylesheet" href="views/CoreUI/css/core.css">
     <link rel="stylesheet" href="views/CoreUI/css/icons-basic.css">
     <link rel="stylesheet" href="views/CoreUI/css/forms.css">
@@ -14,7 +14,7 @@
 </head>
 <body class="auth-body">
 
-    <!-- Navbar superior GNOME -->
+    <!-- Contenedor estanco para la inyección dinámica del Navbar GNOME -->
     <div id="auth-header-container"></div>
 
     <!-- Viewport dinámico para Login / Registro / Password -->
@@ -25,8 +25,9 @@
     <!-- 1. Scripts Troncales del Framework CoreUI -->
     <script src="views/CoreUI/js/libcore.js"></script>
     <script src="views/CoreUI/js/handler.js"></script>
+    <script src="views/CoreUI/js/session_secure.js"></script>
 
-    <!-- 2. Paquete de Idiomas e i18n -->
+    <!-- 2. Paquete de Idiomas e i18n de Global Manager -->
     <script src="views/global_manager/i18n/lang_es.js"></script>
     <script src="views/global_manager/i18n/gm_i18n.js"></script>
 
@@ -35,26 +36,43 @@
     <script src="views/global_manager/logic/gm_register.js"></script>
     <script src="views/global_manager/logic/gm_password.js"></script>
 
-    <!-- 4. Cargador Troncal de App -->
+    <!-- 4. Cargador Troncal de la Aplicación -->
     <script src="views/logic/app/logic.js"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Cargar la barra superior
-            fetch('views/logic/components/navbar-index.html')
-                .then(res => res.text())
-                .then(html => {
-                    document.getElementById('auth-header-container').innerHTML = html;
-                })
-                .catch(err => console.error('[Index] Error al cargar navbar:', err));
+    document.addEventListener('DOMContentLoaded', function() {
+        // 🔒 Escrutinio permanente y trampa Sandbox en la ruta de acceso /
+        if (typeof SessionSecure !== 'undefined' && typeof SessionSecure.protectLogin === 'function') {
+            SessionSecure.protectLogin();
+        }
 
-            // Inicializar el enrutador de entrada CoreUI
-            CoreUI.init({
-                viewContainerId: 'app-view',
-                viewsFolder: 'views/logic/components/',
-                defaultView: 'login'
-            }, AppLogic);
-        });
+        // 📥 Carga dinámica del componente parcial navbar-index.html
+        fetch('views/logic/components/navbar-index.html')
+            .then(response => {
+                if (!response.ok) throw new Error("HTTP error " + response.status);
+                return response.text();
+            })
+            .then(html => {
+                const headerContainer = document.getElementById('auth-header-container');
+                if (headerContainer) {
+                    headerContainer.innerHTML = html;
+
+                    // Traducir el DOM inyectado del navbar si el paquete de idioma está activo
+                    if (typeof GMi18n !== 'undefined' && typeof GMi18n.translateDOM === 'function') {
+                        GMi18n.translateDOM();
+                    }
+                }
+            })
+            .catch(err => console.error("[Index] Error al cargar el navbar parcial:", err));
+
+        // Inicializar el enrutador de vistas sobre #app-view
+        CoreUI.init({
+            viewContainerId: 'app-view',
+            viewsFolder: 'views/logic/components/',
+            defaultView: 'login',
+            baseRoute: '/'
+        }, AppLogic);
+    });
     </script>
 </body>
 </html>

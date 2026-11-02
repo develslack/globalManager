@@ -14,7 +14,6 @@ console.log("🌐 Entorno GM detectado. URL Base de la API:", window.API_BASE_UR
 if (!document.querySelector('.gm-env-badge')) {
     const envBadge = document.createElement("div");
     envBadge.className = 'gm-env-badge';
-
     envBadge.innerHTML = isDev
         ? '<span class="glyphicon glyphicon-wrench"></span> ENTORNO DESARROLLO'
         : '<span class="glyphicon glyphicon-globe"></span> ENTORNO PRODUCCIÓN';
@@ -36,13 +35,14 @@ if (!document.querySelector('.gm-env-badge')) {
 }
 
 // =========================================================================
-// Global Manager Handler
+// Global Manager Sandbox Handler
 // =========================================================================
 const GMHandler = (function() {
     let config = {
         viewContainerId: 'dashboard-view',
-        modulesFolder: 'frontend/templates/views/global_manager/modules/',
-        defaultView: 'gm_users',
+        modulesFolder: 'views/global_manager/modules/',
+        defaultView: 'gm_home',
+        fallbackView: 'gm_not_available',
         baseRoute: '/dashboard'
     };
 
@@ -84,7 +84,7 @@ const GMHandler = (function() {
 
     function cleanAddressBar() {
         let path = window.location.pathname;
-        if (path.endsWith('/gm_dashboard.html') || path.endsWith('/dashboard.html')) {
+        if (path.endsWith('/dashboard.html') || path.endsWith('/gm_dashboard.html')) {
             history.replaceState({ view: config.defaultView }, '', config.baseRoute);
         }
     }
@@ -94,60 +94,73 @@ const GMHandler = (function() {
         loadModule(viewName);
     }
 
+    /**
+     * Carga de módulos según tu lógica:
+     * ¿Existe el módulo solicitado? -> Cargar HTML y su JS.
+     * ¿No existe? -> Cargar 'gm_not_available'.
+     */
     async function loadModule(moduleName) {
         const container = document.getElementById(config.viewContainerId);
         if (!container) return;
 
-        try {
-            const response = await fetch(`${config.modulesFolder}${moduleName}/${moduleName}.html`);
-            if (!response.ok) throw new Error(`HTTP error ${response.status}`);
+        let targetView = moduleName;
 
+        // 1. Verificar si existe la plantilla HTML del módulo solicitado
+        let response = await fetch(`${config.modulesFolder}${targetView}/${targetView}.html`);
+
+        // 2. Si no existe (404), derivar directamente al módulo 'gm_not_available'
+        if (!response.ok && targetView !== config.fallbackView) {
+            console.warn(`[GMHandler] Submódulo '${targetView}' no existe en disco. Cargando '${config.fallbackView}'...`);
+            targetView = config.fallbackView;
+            response = await fetch(`${config.modulesFolder}${targetView}/${targetView}.html`);
+        }
+
+        // 3. Renderizar la plantilla devuelta (sea la solicitada o el fallback)
+        if (response.ok) {
             const htmlContent = await response.text();
             container.innerHTML = htmlContent;
 
-            await loadModuleScript(moduleName);
+            sessionStorage.setItem('gm_current_view', moduleName);
+
+            // Carga no bloqueante del JS del módulo (si no existe el .js, no destruye la vista)
+            loadModuleScript(targetView);
 
             updateActiveNavLinks(moduleName);
 
             if (typeof GMi18n !== 'undefined') {
                 GMi18n.translateDOM();
             }
-        } catch (error) {
-            console.error(`[GMHandler] Error loading module '${moduleName}':`, error);
-            const errorMsg = (typeof GMi18n !== 'undefined') ? GMi18n.t('ui_module_load_error', 'Error al cargar el módulo.') : 'Error loading module.';
-            container.innerHTML = `<div class="alert alert-danger">${errorMsg}</div>`;
         }
     }
 
+    /**
+     * Carga segura del JS estanco del módulo
+     */
     function loadModuleScript(moduleName) {
-        return new Promise((resolve) => {
-            const scriptId = `script-mod-${moduleName}`;
-            const scriptPath = `${config.modulesFolder}${moduleName}/${moduleName}.js`;
+        const scriptId = `script-mod-${moduleName}`;
+        const scriptPath = `${config.modulesFolder}${moduleName}/${moduleName}.js`;
 
-            if (loadedScripts.has(moduleName) || document.getElementById(scriptId)) {
-                const moduleObjName = moduleName.toUpperCase();
-                if (window[moduleObjName] && typeof window[moduleObjName].init === 'function') {
-                    window[moduleObjName].init();
-                }
-                resolve();
-                return;
+        if (loadedScripts.has(moduleName) || document.getElementById(scriptId)) {
+            const moduleObjName = moduleName.toUpperCase();
+            if (window[moduleObjName] && typeof window[moduleObjName].init === 'function') {
+                window[moduleObjName].init();
             }
+            return;
+        }
 
-            const script = document.createElement('script');
-            script.id = scriptId;
-            script.src = scriptPath;
-            script.onload = () => {
-                loadedScripts.add(moduleName);
-                console.log(`[GMHandler] Dynamic JS loaded: ${scriptPath}`);
-                resolve();
-            };
-            script.onerror = () => {
-                console.warn(`[GMHandler] No script found for module: ${moduleName}`);
-                resolve();
-            };
+        const script = document.createElement('script');
+        script.id = scriptId;
+        script.src = scriptPath;
+        script.onload = () => {
+            loadedScripts.add(moduleName);
+            console.log(`[GMHandler] JS dinámico cargado con éxito: ${scriptPath}`);
+        };
+        script.onerror = () => {
+            // Silenciar el error 404 del script opcional para que no aborte la renderización del HTML
+            console.info(`[GMHandler] El módulo '${moduleName}' se renderizó solo con plantilla HTML (sin script .js).`);
+        };
 
-            document.body.appendChild(script);
-        });
+        document.body.appendChild(script);
     }
 
     function updateActiveNavLinks(moduleName) {
@@ -161,10 +174,14 @@ const GMHandler = (function() {
     }
 
     function logout() {
-        localStorage.removeItem('gm_token');
-        localStorage.removeItem('gm_user');
-        sessionStorage.removeItem('gm_current_view');
-        window.location.href = '/';
+        if (typeof SessionSecure !== 'undefined' && typeof SessionSecure.logout === 'function') {
+            SessionSecure.logout(true);
+        } else {
+            localStorage.removeItem('gm_token');
+            localStorage.removeItem('gm_user');
+            sessionStorage.clear();
+            window.location.replace('/');
+        }
     }
 
     return {

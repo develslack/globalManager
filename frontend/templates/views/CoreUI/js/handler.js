@@ -4,8 +4,6 @@
 const isDev = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
 
 window.API_BASE_URL = isDev ? 'http://localhost:5000' : '/api';
-
-// Ruta dinámica para las vistas HTML
 window.VIEWS_PATH = isDev ? '/views' : '';
 
 console.log("🌐 Entorno detectado. URL Base de la API:", window.API_BASE_URL);
@@ -13,34 +11,37 @@ console.log("🌐 Entorno detectado. URL Base de la API:", window.API_BASE_URL);
 // =========================================================================
 // INDICADOR VISUAL DE ENTORNO (FLOTANTE)
 // =========================================================================
-const envBadge = document.createElement("div");
+if (!document.querySelector('.env-badge-core')) {
+    const envBadge = document.createElement("div");
+    envBadge.className = 'env-badge-core';
 
-envBadge.innerHTML = isDev
-    ? '<span class="glyphicon glyphicon-wrench"></span> ENTORNO DESARROLLO'
-    : '<span class="glyphicon glyphicon-globe"></span> ENTORNO PRODUCCIÓN';
+    envBadge.innerHTML = isDev
+        ? '<span class="glyphicon glyphicon-wrench"></span> ENTORNO DESARROLLO'
+        : '<span class="glyphicon glyphicon-globe"></span> ENTORNO PRODUCCIÓN';
 
-envBadge.style.position = 'fixed';
-envBadge.style.bottom = '15px';
-envBadge.style.right = '15px';
-envBadge.style.padding = '8px 15px';
-envBadge.style.borderRadius = '20px';
-envBadge.style.color = '#fff';
-envBadge.style.backgroundColor = isDev ? '#d35400' : '#27ae60'; // Naranja Dev, Verde Prod
-envBadge.style.zIndex = '9999';
-envBadge.style.fontSize = '12px';
-envBadge.style.fontWeight = 'bold';
-envBadge.style.boxShadow = '0 4px 6px rgba(0,0,0,0.3)';
-envBadge.style.pointerEvents = 'none';
+    envBadge.style.position = 'fixed';
+    envBadge.style.bottom = '15px';
+    envBadge.style.right = '15px';
+    envBadge.style.padding = '8px 15px';
+    envBadge.style.borderRadius = '20px';
+    envBadge.style.color = '#fff';
+    envBadge.style.backgroundColor = isDev ? '#d35400' : '#27ae60';
+    envBadge.style.zIndex = '9999';
+    envBadge.style.fontSize = '12px';
+    envBadge.style.fontWeight = 'bold';
+    envBadge.style.boxShadow = '0 4px 6px rgba(0,0,0,0.3)';
+    envBadge.style.pointerEvents = 'none';
 
-document.body.appendChild(envBadge);
+    document.body.appendChild(envBadge);
+}
 
 // =========================================================================
-// CoreUI Base Handler
+// CoreUI Base Handler (Exclusivo para Acceso / index.html)
 // =========================================================================
 const CoreUI = (function() {
     let config = {
         viewContainerId: 'app-view',
-        viewsFolder: 'frontend/templates/views/logic/components/',
+        viewsFolder: 'views/logic/components/',
         defaultView: 'login',
         baseRoute: '/'
     };
@@ -48,9 +49,13 @@ const CoreUI = (function() {
     let businessLogic = null;
 
     function init(userConfig = {}, appLogicModule = null) {
+        // Bloquear ejecución de CoreUI si ya nos encontramos en el Dashboard
+        if (window.location.pathname.startsWith('/dashboard')) {
+            return;
+        }
+
         config = Object.assign({}, config, userConfig);
         businessLogic = appLogicModule;
-
         cleanAddressBar();
 
         document.addEventListener('click', function(e) {
@@ -81,7 +86,10 @@ const CoreUI = (function() {
     function getRouteFromUrl() {
         let path = window.location.pathname.replace(/\.html$/, '');
         const cleanPath = path.replace(/^\/|\/$/g, '');
-        if (!cleanPath || cleanPath === 'index') return null;
+
+        if (!cleanPath || cleanPath === 'index' || cleanPath === 'dashboard') {
+            return null;
+        }
         return cleanPath;
     }
 
@@ -113,7 +121,8 @@ const CoreUI = (function() {
     }
 
     function handoverToDashboard() {
-        window.location.href = '/dashboard';
+        // Recarga de navegación hacia la ruta limpia /dashboard
+        window.location.assign('/dashboard');
     }
 
     return {

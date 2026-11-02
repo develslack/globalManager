@@ -47,6 +47,7 @@ const GMLogin = (function() {
             const result = await response.json();
 
             if (response.ok && result.status === 'success') {
+
                 localStorage.setItem('gm_token', result.user.token);
                 localStorage.setItem('gm_user', JSON.stringify(result.user));
 
@@ -55,8 +56,10 @@ const GMLogin = (function() {
                 }
 
                 setTimeout(() => {
-                    window.location.href = '/dashboard';
+                    // Usar replace para sobreescribir el estado en la pila del navegador
+                    window.location.replace('/dashboard');
                 }, 2000);
+
             } else {
                 const errorMsg = result.message || GMi18n.t('auth_login_error_credentials', 'Las credenciales ingresadas son incorrectas.');
                 showError(alertBox, errorMsg);

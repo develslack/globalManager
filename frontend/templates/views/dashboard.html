@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>chassisCore - Dashboard</title>
+    <title>Global Manager - Dashboard</title>
     <link rel="stylesheet" href="views/CoreUI/css/core.css">
     <link rel="stylesheet" href="views/CoreUI/css/icons-basic.css">
     <link rel="stylesheet" href="views/CoreUI/css/navbar-dashboard.css">
@@ -26,108 +26,70 @@
     <link rel="stylesheet" href="views/CoreUI/css/animations.css">
     <link rel="stylesheet" href="views/CoreUI/css/animations-advanced.css">
     <link rel="stylesheet" href="views/CoreUI/css/themes.css">
+    <link rel="stylesheet" href="views/CoreUI/css/home.css">
+    <link rel="stylesheet" href="views/CoreUI/css/gm_not_available.css">
 </head>
 <body class="dashboard-body">
 
     <div class="app-layout">
-        <!-- Sidebar Lateral (Única instancia) -->
+        <!-- Sidebar Navigation -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <h2>chassisCore</h2>
+                <a href="#" data-route="gm_home" class="nav-item">
+                    <span class="icon icon-accesories-utilities-desktop-extra icon-sm"></span> Global Manager</a>
             </div>
             <nav class="sidebar-nav">
-                <a href="#" data-route="inicio" class="nav-item active">
-                    <span class="icon icon-home icon-sm"></span> Inicio
-                </a>
-                <a href="#" data-route="perfil" class="nav-item">
-                    <span class="icon icon-user icon-sm"></span> Mi Perfil
-                </a>
-                <a href="/buttons-demo" data-route="buttons-demo" class="nav-item">
-                    <span class="icon icon-user icon-sm"></span> Buttons Demo
-                </a>
-                <a href="/modals-demo" data-route="modals-demo" class="nav-item">
-                    <span class="icon icon-user icon-sm"></span> Modals Demo
-                </a>
-                <a href="/panels-demo" data-route="panels-demo" class="nav-item">
-                    <span class="icon icon-user icon-sm"></span> Panels Demo
-                </a>
-                <a href="/jumbotron-demo" data-route="jumbotron-demo" class="nav-item">
-                    <span class="icon icon-user icon-sm"></span> Jumbotron Demo
-                </a>
-                <a href="/badges-demo" data-route="badges-demo" class="nav-item">
-                    <span class="icon icon-user icon-sm"></span> Badges Demo
-                </a>
-                <a href="/progress-demo" data-route="progress-demo" class="nav-item">
-                    <span class="icon icon-user icon-sm"></span> Progress Demo
-                </a>
-                <a href="/list-groups-demo" data-route="list-groups-demo" class="nav-item">
-                    <span class="icon icon-user icon-sm"></span> List-Groups Demo
-                </a>
-                <a href="/collapse-demo" data-route="collapse-demo" class="nav-item">
-                    <span class="icon icon-user icon-sm"></span> Collapse Demo
-                </a>
-                <a href="/tabs-demo" data-route="tabs-demo" class="nav-item">
-                    <span class="icon icon-user icon-sm"></span> Tabs Demo
-                </a>
-                <a href="/inputs-demo" data-route="inputs-demo" class="nav-item">
-                    <span class="icon icon-user icon-sm"></span> Inputs Demo
-                </a>
-                <a href="/tooltips-demo" data-route="tooltips-demo" class="nav-item">
-                    <span class="icon icon-user icon-sm"></span> Tooltips Demo
-                </a>
-                <a href="/popovers-demo" data-route="popovers-demo" class="nav-item">
-                    <span class="icon icon-user icon-sm"></span> Popovers Demo
-                </a>
-                <a href="/tables-demo" data-route="tables-demo" class="nav-item">
-                    <span class="icon icon-user icon-sm"></span> Tables Demo
-                </a>
-                <a href="/loaders-demo" data-route="loaders-demo" class="nav-item">
-                    <span class="icon icon-user icon-sm"></span> Loaders Demo
-                </a>
-                <a href="/animations-demo" data-route="animations-demo" class="nav-item">
-                    <span class="icon icon-user icon-sm"></span> Animations Demo
-                </a>
-                <a href="/animations-advanced-demo" data-route="animations-advanced-demo" class="nav-item">
-                    <span class="icon icon-user icon-sm"></span> Animations Demo
-                </a>
-                <a href="/themes-demo" data-route="themes-demo" class="nav-item">
-                    <span class="icon icon-user icon-sm"></span> Themes Demo
-                </a>
+                <a href="#" data-route="gm_users" class="nav-item" data-i18n="menu_users">Usuarios</a>
+                <a href="#" data-route="gm_stock" class="nav-item" data-i18n="menu_stock">Stock</a>
             </nav>
         </aside>
 
-        <!-- Topbar y Área Principal -->
+        <!-- Main Content Viewport -->
         <div class="main-wrapper">
             <header class="topbar">
-                <span class="view-title">Panel Principal</span>
-                <div class="topbar-right">
-                    <span class="user-info">Administrador</span>
-                    <button class="btn-subtle" onclick="location.href='/'">Cerrar Sesión</button>
-                </div>
+                <span class="view-title">
+                    <button class="btn btn-default">
+                        <span class="icon icon-categories-preferences-system icon-sm"></span>Panel de Control</button>
+                    <button class="btn btn-default">
+                        <span class="icon icon-apps-help-browser icon-sm"></span>Ayuda al Usuario</button>
+                </span>
+                <button id="btn-logout" class="btn btn-default" data-i18n="ui_logout">
+                     <span class="icon icon-actions-system-shutdown icon-sm"></span>Cerrar Sesión</button>
             </header>
 
-            <!-- CONTENEDOR INTERNO: Aquí se inyectan SOLO los componentes parciales -->
+            <!-- Dynamic Viewport -->
             <main id="dashboard-view" class="content-viewport">
-                <!-- El motor CoreUI cargará aquí inicio.html, perfil.html, etc. -->
             </main>
         </div>
     </div>
 
+    <!-- 1. Troncales del Framework CoreUI -->
     <script src="views/CoreUI/js/libcore.js"></script>
-    <script src="views/CoreUI/js/handler.js"></script>
-    <script src="views/logic/app/logic.js"></script>
     <script src="views/CoreUI/js/tables.js"></script>
 
+    <!-- 2. Paquete de Idiomas e i18n de Global Manager -->
+    <script src="views/global_manager/i18n/lang_es.js"></script>
+    <script src="views/global_manager/i18n/gm_i18n.js"></script>
+
+    <!-- 3. Dynamic Router Handler del Proyecto -->
+    <script src="views/CoreUI/js/session_secure.js"></script>
+    <script src="views/global_manager/logic/gm_handler.js"></script>
+
+   <!-- 4. Inicialización del Sandbox -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            CoreUI.init({
+    document.addEventListener('DOMContentLoaded', function() {
+            SessionSecure.protectDashboard();
+
+            // Persistencia tras F5: Recuperar vista guardada o iniciar en 'gm_home'
+            const initialView = sessionStorage.getItem('gm_current_view') || 'gm_home';
+
+            GMHandler.init({
                 viewContainerId: 'dashboard-view',
-                viewsFolder: 'views/logic/components/',
-                defaultView: 'inicio',
-                baseRoute: '/dashboard',
-                preserveBaseRoute: true // <- Bloquea la URL en /dashboard para todas las sub-vistas
-            }, AppLogic);
+                modulesFolder: 'views/global_manager/modules/',
+                defaultView: initialView,
+                baseRoute: '/dashboard'
+            });
         });
-    </script>
+</script>
 </body>
 </html>

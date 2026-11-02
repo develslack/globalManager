@@ -59,6 +59,13 @@
 .icon-actions-list-add-user { background-image: url('../assets/icons/actions/list-add-user.png'); }
 .icon-actions-layer-visible-on { background-image: url('../assets/icons/actions/layer-visible-on.png'); }
 .icon-actions-layer-visible-off { background-image: url('../assets/icons/actions/layer-visible-off.png'); }
+.icon-actions-system-shutdown { background-image: url('../assets/icons/actions/system-shutdown.png'); }
+
+/* apps icons */
+.icon-apps-help-browser { background-image: url('../assets/icons/apps/help-browser.png'); }
+
+/* categories icons */
+.icon-categories-preferences-system { background-image: url('../assets/icons/categories/preferences-system.png'); }
 
 
 
