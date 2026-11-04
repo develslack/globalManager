@@ -38,7 +38,12 @@ backend/src/bussiness/../system/session_manager.h:48:13: aviso: ‘route_post_se
 backend/src/bussiness/../system/session_manager.h:49:13: aviso: ‘route_post_logout_session’ se declaró ‘static’ pero nunca se define [-Wunused-function]
    49 | static void route_post_logout_session(int client, const char* body);
       |             ^~~~~~~~~~~~~~~~~~~~~~~~~
+backend/src/main.c: En la función ‘main’:
+backend/src/main.c:35:16: aviso: variable ‘alist_users’ sin usar [-Wunused-variable]
+   35 |     ArrayList* alist_users = al_newArrayList();
+      |                ^~~~~~~~~~~
 En el fichero incluido desde backend/src/main.c:11:
+backend/src/main.c: En el nivel principal:
 backend/src/system/session_manager.h:20:13: aviso: ‘trim_string’ se declaró ‘static’ pero nunca se define [-Wunused-function]
    20 | static void trim_string(char *str);
       |             ^~~~~~~~~~~

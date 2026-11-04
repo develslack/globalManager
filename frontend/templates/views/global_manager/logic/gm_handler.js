@@ -100,35 +100,39 @@ const GMHandler = (function() {
      * ¿No existe? -> Cargar 'gm_not_available'.
      */
     async function loadModule(moduleName) {
+
         const container = document.getElementById(config.viewContainerId);
         if (!container) return;
 
         let targetView = moduleName;
-
-        // 1. Verificar si existe la plantilla HTML del módulo solicitado
         let response = await fetch(`${config.modulesFolder}${targetView}/${targetView}.html`);
 
-        // 2. Si no existe (404), derivar directamente al módulo 'gm_not_available'
+        // Derivación directa al módulo 'gm_not_available'
         if (!response.ok && targetView !== config.fallbackView) {
             console.warn(`[GMHandler] Submódulo '${targetView}' no existe en disco. Cargando '${config.fallbackView}'...`);
             targetView = config.fallbackView;
             response = await fetch(`${config.modulesFolder}${targetView}/${targetView}.html`);
         }
 
-        // 3. Renderizar la plantilla devuelta (sea la solicitada o el fallback)
+        // Renderizar la plantilla HTML
         if (response.ok) {
             const htmlContent = await response.text();
             container.innerHTML = htmlContent;
 
             sessionStorage.setItem('gm_current_view', moduleName);
 
-            // Carga no bloqueante del JS del módulo (si no existe el .js, no destruye la vista)
+            // Carga no bloqueante del JS del módulo
             loadModuleScript(targetView);
-
             updateActiveNavLinks(moduleName);
 
+            // 1. INICIALIZAR MOTOR INTERNACIONALIZACIÓN
             if (typeof GMi18n !== 'undefined') {
                 GMi18n.translateDOM();
+            }
+
+            // 2. INICIALIZAR EL MOTOR DE TABLAS AUTOMÁTICAMENTE
+            if (typeof CoreTable !== 'undefined' && typeof CoreTable.autoInit === 'function') {
+                CoreTable.autoInit(container);
             }
         }
     }

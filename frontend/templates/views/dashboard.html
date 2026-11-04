@@ -39,8 +39,14 @@
                     <span class="icon icon-accesories-utilities-desktop-extra icon-sm"></span> Global Manager</a>
             </div>
             <nav class="sidebar-nav">
-                <a href="#" data-route="gm_users" class="nav-item" data-i18n="menu_users">Usuarios</a>
-                <a href="#" data-route="gm_stock" class="nav-item" data-i18n="menu_stock">Stock</a>
+                <a href="#" data-route="gm_analitics" class="nav-item" data-i18n="menu_users">
+                    <span class="icon icon-actions-view-calendar-time-spent icon-lg"></span> Alertas / Analiticas</a>
+                <a href="#" data-route="gm_main_manager" class="nav-item" data-i18n="menu_stock">
+                    <span class="icon icon-actions-resource-group icon-lg"></span> Administración</a>
+                <a href="#" data-route="gm_supplies" class="nav-item" data-i18n="menu_stock">
+                    <span class="icon icon-actions-code-block icon-lg"></span> Inventario / Productos</a>
+                <a href="#" data-route="gm_cash_flow" class="nav-item" data-i18n="menu_stock">
+                    <span class="icon icon-actions-view-financial-transfer icon-lg"></span> Finanzas / Caja</a>
             </nav>
         </aside>
 
@@ -48,7 +54,7 @@
         <div class="main-wrapper">
             <header class="topbar">
                 <span class="view-title">
-                    <button class="btn btn-default">
+                    <button class="btn btn-default" data-route="gm_control_panel">
                         <span class="icon icon-categories-preferences-system icon-sm"></span>Panel de Control</button>
                     <button class="btn btn-default">
                         <span class="icon icon-apps-help-browser icon-sm"></span>Ayuda al Usuario</button>

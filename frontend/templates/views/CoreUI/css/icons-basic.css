@@ -60,12 +60,38 @@
 .icon-actions-layer-visible-on { background-image: url('../assets/icons/actions/layer-visible-on.png'); }
 .icon-actions-layer-visible-off { background-image: url('../assets/icons/actions/layer-visible-off.png'); }
 .icon-actions-system-shutdown { background-image: url('../assets/icons/actions/system-shutdown.png'); }
+.icon-actions-run-build-configure { background-image: url('../assets/icons/actions/run-build-configure.png'); }
+.icon-actions-svn-update { background-image: url('../assets/icons/actions/svn-update.png'); }
+.icon-actions-svn-commit { background-image: url('../assets/icons/actions/svn-commit.png'); }
+.icon-actions-irc-operator { background-image: url('../assets/icons/actions/irc-operator.png'); }
+.icon-actions-meeting-participant-request-response { background-image: url('../assets/icons/actions/meeting-participant-request-response.png'); }
+.icon-actions-view-process-own { background-image: url('../assets/icons/actions/view-process-own.png'); }
+.icon-actions-document-decrypt { background-image: url('../assets/icons/actions/document-decrypt.png'); }
+.icon-actions-format-fill-color { background-image: url('../assets/icons/actions/format-fill-color.png'); }
+.icon-actions-view-calendar-time-spent { background-image: url('../assets/icons/actions/view-calendar-time-spent.png'); }
+.icon-actions-resource-group { background-image: url('../assets/icons/actions/resource-group.png'); }
+.icon-actions-code-block { background-image: url('../assets/icons/actions/code-block.png'); }
+.icon-actions-view-financial-transfer { background-image: url('../assets/icons/actions/view-financial-transfer.png'); }
 
 /* apps icons */
 .icon-apps-help-browser { background-image: url('../assets/icons/apps/help-browser.png'); }
+.icon-apps-preferences-desktop-user-password { background-image: url('../assets/icons/apps/preferences-desktop-user-password.png'); }
+.icon-apps-preferences-preferences-desktop-user { background-image: url('../assets/icons/apps/preferences-desktop-user.png'); }
+.icon-apps-preferences-krfb { background-image: url('../assets/icons/apps/krfb.png'); }
+.icon-apps-utilities-terminal { background-image: url('../assets/icons/apps/utilities-terminal.png'); }
+.icon-apps-system-users { background-image: url('../assets/icons/apps/system-users.png'); }
+.icon-apps-preferences-desktop-default-applications { background-image: url('../assets/icons/apps/preferences-desktop-default-applications.png'); }
+.icon-apps-preferences-system-network-sharing { background-image: url('../assets/icons/apps/preferences-system-network-sharing.png'); }
+.icon-apps-preferences-plugin-script { background-image: url('../assets/icons/apps/preferences-plugin-script.png'); }
+.icon-apps-akregator { background-image: url('../assets/icons/apps/akregator.png'); }
+.icon-apps-preferences-desktop-locale { background-image: url('../assets/icons/apps/preferences-desktop-locale.png'); }
+.icon-apps-plasmagik { background-image: url('../assets/icons/apps/plasmagik.png'); }
+
 
 /* categories icons */
 .icon-categories-preferences-system { background-image: url('../assets/icons/categories/preferences-system.png'); }
+.icon-categories-applications-other { background-image: url('../assets/icons/categories/applications-other.png'); }
+
 
 
 

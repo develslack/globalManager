@@ -1,0 +1,36 @@
+<div class="panel panel-default">
+    <div class="panel-header">
+        <h3 class="panel-title">
+            <span class="icon icon-user icon-sm"></span>
+                <span class="icon icon-apps-system-users icon-md"></span> Usuarios del Sistema
+        </h3>
+            <button class="btn btn-success" onclick="LibCore.openModal('modal-new_user')">
+                Añadir Usuario
+            </button>
+    </div>
+    <div class="panel-body" style="padding: 0;">
+
+        <div class="table-container" style="border: none; box-shadow: none;">
+
+            <!-- Atributos declarativos para DataTables -->
+            <table id="usersTable" class="table table-striped table-hover" data-core-table data-page-size="5" data-filename="users-report">
+                <thead>
+
+                        <th>Nombre y Apellido</th>
+                        <th>Email</th>
+                        <th>Rol</th>
+                        <th class="no-sort">Acciones</th>
+
+                </thead>
+
+                <tbody id="usersTableBody"></tbody>
+
+            </table>
+
+            <div id="alert-info"></div>
+
+        </div>
+
+    </div>
+</div>
+

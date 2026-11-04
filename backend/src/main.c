@@ -31,6 +31,9 @@ int main() {
     // 4. Iniciamos session_manager como controlador del sistema
     session_manager_init();
 
+    // SE CARGAN EN MENORIA LOS DATOS
+    ArrayList* alist_users = al_newArrayList();
+
 
     // ================================================================================= //
     // 🚀 SI LLEGA A ESTE PUNTO, EL HARDWARE ESTÁ BLINDADO Y ES APTO PARA 24x365

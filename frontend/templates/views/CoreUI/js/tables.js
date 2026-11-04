@@ -1,6 +1,6 @@
 /**
  * chassisCore - tables.js
- * Motor independiente de DataTables con Auto-Inicialización para SPA.
+ * Motor independiente de DataTables con Auto-Inicialización y Actualización Dinámica para SPA.
  */
 console.log("CoreTable cargado...");
 
@@ -60,8 +60,14 @@ const CoreTable = (function() {
             if (!tbody) return;
 
             const rows = Array.from(tbody.querySelectorAll('tr'));
+
+            // Reconstruimos la matriz de datos original de forma agnóstica
             this.originalRows = rows.map((tr, index) => {
-                const cells = Array.from(tr.children).map(td => td.innerText.trim());
+                // Usamos textContent y limpiamos espacios dobles y saltos de línea
+                const cells = Array.from(tr.children).map(td => {
+                    return (td.textContent || "").replace(/\s+/g, ' ').trim();
+                });
+
                 return {
                     element: tr,
                     data: cells,
@@ -122,7 +128,7 @@ const CoreTable = (function() {
         }
 
         bindEvents() {
-            // Buscador
+            // Buscador con normalización de tildes
             const searchInput = this.container.querySelector('.table-search-input');
             if (searchInput) {
                 searchInput.addEventListener('input', (e) => {
@@ -142,7 +148,7 @@ const CoreTable = (function() {
                 });
             }
 
-            // Ordenamiento por columnas (Ordenar de A-Z, Z-A, Menor a Mayor)
+            // Ordenamiento por columnas (A-Z, Z-A, numérico)
             const headers = this.table.querySelectorAll('thead th');
             headers.forEach((th, colIndex) => {
                 if (this.options.sortable && !th.classList.contains('no-sort')) {
@@ -169,10 +175,20 @@ const CoreTable = (function() {
             if (!this.searchQuery) {
                 this.filteredRows = [...this.originalRows];
             } else {
+                const normalizeText = (text) => {
+                    return text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                };
+
+                const queryNormalized = normalizeText(this.searchQuery);
+
                 this.filteredRows = this.originalRows.filter(row => {
-                    return row.data.some(cellText => cellText.toLowerCase().includes(this.searchQuery));
+                    return row.data.some(cellText => {
+                        const cellNormalized = normalizeText(cellText);
+                        return cellNormalized.includes(queryNormalized);
+                    });
                 });
             }
+            this.currentPage = 1;
             this.render();
         }
 
@@ -346,6 +362,12 @@ const CoreTable = (function() {
             link.click();
             document.body.removeChild(link);
         }
+
+        // Método para re-escanear dinámicamente datos cargados por fetch/AJAX
+        update() {
+            this.extractData();
+            this.filterData();
+        }
     }
 
     function init(tableId, options = {}) {
@@ -359,7 +381,9 @@ const CoreTable = (function() {
 
     // Auto-inicialización declarativa
     function autoInit(container = document) {
-        const tables = container.querySelectorAll('table[data-core-table], table.table');
+        const scope = container || document;
+        const tables = scope.querySelectorAll('table[data-core-table], table.table');
+
         tables.forEach(table => {
             if (!table.dataset.coreTableInitialized) {
                 table.dataset.coreTableInitialized = "true";
@@ -373,6 +397,10 @@ const CoreTable = (function() {
     return {
         init: init,
         autoInit: autoInit,
-        getInstance: (id) => instances.get(id)
+        getInstance: (id) => instances.get(id),
+        update: (id) => {
+            const instance = instances.get(id);
+            if (instance) instance.update();
+        }
     };
 })();
