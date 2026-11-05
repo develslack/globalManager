@@ -1,5 +1,5 @@
 // ================================================================================================= //
-// MÓDULO GM_USERS - Lógica de vista "Usuarios"
+// MÓDULO GM_USERS - Lógica de vista "Usuarios" (Global Manager)
 // ================================================================================================= //
 
 const GM_USERS = (function() {
@@ -10,7 +10,7 @@ const GM_USERS = (function() {
      */
     async function init() {
         console.clear();
-        console.log("✅ Inicializando módulo Usuarios...");
+        console.log("✅ Inicializando módulo Global Manager: Usuarios...");
 
         attachGlobalListeners();
         await loadUsersList();
@@ -26,9 +26,8 @@ const GM_USERS = (function() {
         if (!tableBody) return;
 
         try {
-            // Activar loader bloqueando el visor principal
             if (typeof LibCore !== 'undefined') {
-                LibCore.showLoader('dashboard-view', 'spinner', 'submit', 'Obteniendo registros...');
+                LibCore.showLoader('dashboard-view', 'spinner', 'submit', 'Obteniendo registros de usuarios...');
             }
 
             const response = await fetch(window.API_BASE_URL + "/users/list");
@@ -41,7 +40,6 @@ const GM_USERS = (function() {
 
             usuarios.forEach((u) => {
                 const row = document.createElement("tr");
-                // Se utiliza class="btn-editar-rol" en lugar de un ID repetido
                 row.innerHTML = `
                     <td class="text-center">${u.nombre}</td>
                     <td class="text-center">${u.email}</td>
@@ -55,7 +53,7 @@ const GM_USERS = (function() {
                 count++;
             });
 
-            // NUEVO: Avisar al motor agnóstico que la tabla ya tiene datos nuevos
+            // Actualizar motor de tablas agnóstico apuntando al ID de la tabla en el HTML
             if (typeof CoreTable !== 'undefined') {
                 CoreTable.update('usersTable');
             }
@@ -75,7 +73,6 @@ const GM_USERS = (function() {
                 alertInfo.innerHTML = `<div class="alert alert-danger">Error al cargar los usuarios. Verifique conexión.</div>`;
             }
         } finally {
-            // Liberar la pantalla siempre al finalizar
             if (typeof LibCore !== 'undefined') {
                 LibCore.hideLoader('dashboard-view');
             }
@@ -83,130 +80,77 @@ const GM_USERS = (function() {
     }
 
     /**
-     * Escuchador de eventos delegado (se ejecuta 1 sola vez en la vida útil de la app)
+     * Escuchador de eventos delegado
      */
     function attachGlobalListeners() {
         if (listenersAttached) return;
         listenersAttached = true;
 
         document.addEventListener("click", async (e) => {
-            // Capturar clics sobre botones de edición generados dinámicamente
-            const btn = e.target.closest(".btn-editar-rol");
-            if (!btn) return;
-
-            e.preventDefault();
-            const userId = btn.dataset.id;
-            console.log("🧩 Solicitud de edición de rol para usuario ID:", userId);
-
-            // Bloquear interfaz mientras se transiciona a la vista del formulario
-            if (typeof LibCore !== 'undefined') {
-                LibCore.showLoader('dashboard-view', 'spinner', 'warning', 'Cargando panel de edición...');
+            // 1. Clic en botón "Añadir Usuario"
+            const btnNewUser = e.target.closest("#btn-add-user, [data-action='new-user']");
+            if (btnNewUser) {
+                e.preventDefault();
+                await openNewUserModal();
+                return;
             }
 
-            try {
-                // NOTA: Si en el futuro actualizas esta vista a componente estanco nativo, usarás:
-                // GMHandler.navigate('gm_rol_usuario');
-                if (typeof loadDashboardView === 'function') {
-                    await loadDashboardView(window.VIEWS_PATH + "/rol_usuario.html");
-                }
-
-                // Ejecuta la consulta de datos para poblar el formulario
-                await loadUserRolForm(userId);
-            } catch (error) {
-                console.error("Error al transicionar de vista:", error);
-                if (typeof LibCore !== 'undefined') LibCore.hideLoader('dashboard-view');
+            // 2. Capturar clics sobre botones de edición de rol
+            const btnEdit = e.target.closest(".btn-editar-rol");
+            if (btnEdit) {
+                e.preventDefault();
+                const userId = btnEdit.dataset.id;
+                console.log("🧩 Solicitud de edición de rol para usuario ID:", userId);
             }
         });
     }
 
     /**
-     * Consulta el rol actual y configura el formulario de actualización
+     * Carga asíncrona del modal parcial de alta y apertura mediante LibCore
      */
-    async function loadUserRolForm(userId) {
-        console.log("🔍 Iniciando configuración de edición para ID:", userId);
+    async function openNewUserModal() {
+        console.log("📂 Solicitando modal de alta de usuario...");
+
+        // 1. Contenedor temporal con ID único (evita colisión con el ID del modal interno)
+        let modalContainer = document.getElementById("modal-container-dynamic");
+        if (!modalContainer) {
+            modalContainer = document.createElement("div");
+            modalContainer.id = "modal-container-dynamic";
+            document.body.appendChild(modalContainer);
+        }
 
         try {
-            // Mantener un loader en el formulario
+            // Cargar la plantilla HTML del modal
+            const response = await fetch(`${configFolder()}/new_user.html`);
+            if (!response.ok) throw new Error("No se pudo cargar la vista del modal de alta.");
+
+            const htmlContent = await response.text();
+            modalContainer.innerHTML = htmlContent;
+
+            // 2. Poblar el selector de roles del formulario
+            await loadRoles("select-new-user-rol");
+
+            // 3. Abrir el modal apuntando a su ID real (<div id="modal-new_user" class="modal-backdrop">)
             if (typeof LibCore !== 'undefined') {
-                LibCore.showLoader('dashboard-view', 'hourglass', 'info', 'Consultando base de datos...');
+                LibCore.openModal("modal-new_user");
             }
 
-            const response = await fetch(window.API_BASE_URL + "/users/get-role", {
-                method: "POST",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: `id=${userId}`
-            });
+            // 4. Activar eventos de submit del formulario
+            initNewUserFormListeners();
 
-            if (!response.ok) throw new Error("Error al obtener el rol del usuario");
-
-            const data = await response.json();
-            console.log("📦 Rol actual detectado:", data.rol);
-
-            // Poblar el SELECT
-            await loadRoles("rol", data.rol_id || data.rol);
-
-            const form = document.getElementById("form-user-rol");
-            if (form) {
-                document.getElementById("id_usuario").value = userId;
-
-                form.addEventListener("submit", async (e) => {
-                    e.preventDefault();
-
-                    // Loader durante la escritura en base de datos
-                    if (typeof LibCore !== 'undefined') {
-                        LibCore.showLoader('dashboard-view', 'spinner', 'submit', 'Actualizando credenciales...');
-                    }
-
-                    const formData = new FormData(form);
-                    const id = formData.get("id");
-                    const rolId = formData.get("rol");
-
-                    try {
-                        const res = await fetch(window.API_BASE_URL + "/users/update-role", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                            body: `id=${encodeURIComponent(id)}&rol=${encodeURIComponent(rolId)}`
-                        });
-
-                        const result = await res.json();
-                        const msgDiv = document.getElementById('msg-update-rol');
-
-                        if (result.status === "ok") {
-                            if(msgDiv) {
-                                msgDiv.innerHTML = `<br><div class="alert alert-success alert-dismissible">
-                                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                                    <p align=center><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> ${result.message}</p>
-                                </div>`;
-                            }
-
-                            setTimeout(function() { $(".close").click(); }, 3000);
-                            setTimeout(function() {
-                                if (typeof loadDashboardView === 'function') {
-                                    loadDashboardView(window.VIEWS_PATH + "/usuarios.html");
-                                }
-                            }, 4000);
-
-                        } else {
-                            if(msgDiv) {
-                                msgDiv.innerHTML = `<br><div class="alert alert-danger alert-dismissible">
-                                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                                    <p align=center><span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span> ${result.message}</p>
-                                </div>`;
-                            }
-                            setTimeout(function() { $(".close").click(); }, 3000);
-                        }
-                    } catch (err) {
-                        console.error("Error al actualizar:", err);
-                    } finally {
-                        if (typeof LibCore !== 'undefined') LibCore.hideLoader('dashboard-view');
-                    }
-                });
+        } catch (error) {
+            console.error("💥 Error al abrir el modal de usuario:", error);
+            if (typeof LibCore !== 'undefined') {
+                LibCore.toast("Error al cargar el formulario de alta.", "danger", "Atención");
             }
-        } catch (err) {
-            console.error("💥 Error en el flujo de roles:", err);
-        } finally {
-            if (typeof LibCore !== 'undefined') LibCore.hideLoader('dashboard-view');
         }
+    }
+
+    /**
+     * Helper para obtener la ruta base del módulo
+     */
+    function configFolder() {
+        return 'views/global_manager/modules/gm_users';
     }
 
     /**
@@ -220,7 +164,7 @@ const GM_USERS = (function() {
             const response = await fetch(window.API_BASE_URL + "/roles/list");
             const roles = await response.json();
 
-            select.innerHTML = '<option value="" disabled>Seleccione un Rol</option>';
+            select.innerHTML = '<option value="" disabled selected>Seleccione un Rol</option>';
 
             roles.forEach(rol => {
                 const option = document.createElement("option");
@@ -239,12 +183,60 @@ const GM_USERS = (function() {
         }
     }
 
-    // Exponer el constructor al objeto global para que gm_handler lo localice
+    /**
+     * Configuración del envío del formulario de alta al backend
+     */
+    function initNewUserFormListeners() {
+        const form = document.getElementById("form-new_user");
+        if (!form) return;
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            console.log("📨 Enviando datos de nuevo usuario al backend...");
+
+            const formData = new URLSearchParams(new FormData(form));
+
+            try {
+                if (typeof LibCore !== 'undefined') {
+                    LibCore.showLoader('modal-new_user', 'spinner', 'submit', 'Registrando usuario...');
+                }
+
+                const res = await fetch(window.API_BASE_URL + "/users/register", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: formData.toString()
+                });
+
+                const result = await res.json();
+
+                if (result.status === "ok" || res.ok) {
+                    if (typeof LibCore !== 'undefined') {
+                        LibCore.toast(result.message || "Usuario registrado exitosamente.", "success", "Éxito");
+                        LibCore.closeModal("modal-new_user");
+                    }
+                    await loadUsersList();
+                } else {
+                    if (typeof LibCore !== 'undefined') {
+                        LibCore.toast(result.message || "Error en el registro.", "danger", "Validación");
+                    }
+                }
+            } catch (err) {
+                console.error("Error en petición de alta:", err);
+                if (typeof LibCore !== 'undefined') {
+                    LibCore.toast("Error de conexión al registrar usuario.", "danger", "Error crítico");
+                }
+            } finally {
+                if (typeof LibCore !== 'undefined') {
+                    LibCore.hideLoader('modal-new_user');
+                }
+            }
+        });
+    }
+
     return {
         init: init
     };
 
 })();
 
-// Adjuntar el objeto al contexto Window para que el enrutador "GMHandler" detecte window["GM_USERS"].init()
 window.GM_USERS = GM_USERS;

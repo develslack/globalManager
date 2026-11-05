@@ -1,14 +1,39 @@
 <div id="modal-new_user" class="modal-backdrop">
     <div class="modal modal-md modal-success">
         <div class="modal-header">
-            <h4 class="modal-title">Alta de Usuario</h4>
-            <button class="btn-modal-close" data-core-dismiss="modal">&times;</button>
+            <h4 class="modal-title">
+                <span class="icon icon-user icon-sm"></span> Alta de Usuario
+            </h4>
+            <button type="button" class="btn-modal-close" data-core-dismiss="modal">&times;</button>
         </div>
-        <div class="modal-body">
-            <p>Los cambios en la configuración del servidor fueron aplicados correctamente.</p>
-        </div>
-        <div class="modal-footer">
-            <button class="btn btn-success btn-sm" data-core-dismiss="modal">Aceptar</button>
-        </div>
+
+        <!-- El ID del formulario debe coincidir con el que busca JS -->
+        <form id="form-new_user">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Nombre y Apellido</label>
+                    <input type="text" name="nombre" class="form-control" required placeholder="Ej: Juan Pérez">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Correo Electrónico</label>
+                    <input type="email" name="email" class="form-control" required placeholder="usuario@empresa.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Contraseña</label>
+                    <input type="password" name="password" class="form-control" required placeholder="Ingrese una clave segura">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Asignar Rol</label>
+                    <!-- Este select lo llenaremos dinámicamente con JS -->
+                    <select name="rol" id="select-new-user-rol" class="form-control" required>
+                        <option value="" disabled selected>Cargando roles...</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default btn-sm" data-core-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-success btn-sm">Guardar Usuario</button>
+            </div>
+        </form>
     </div>
 </div>
