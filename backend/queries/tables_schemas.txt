@@ -1,5 +1,6 @@
-
-
+show tables;
+select * from gm_users;
+select * from gm_roles;
 
 #================================================================#
 # table gm_users

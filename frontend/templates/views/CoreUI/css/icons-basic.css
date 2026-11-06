@@ -72,6 +72,9 @@
 .icon-actions-resource-group { background-image: url('../assets/icons/actions/resource-group.png'); }
 .icon-actions-code-block { background-image: url('../assets/icons/actions/code-block.png'); }
 .icon-actions-view-financial-transfer { background-image: url('../assets/icons/actions/view-financial-transfer.png'); }
+.icon-actions-application-exit { background-image: url('../assets/icons/actions/application-exit.png'); }
+.icon-actions-dialog-ok { background-image: url('../assets/icons/actions/dialog-ok.png'); }
+.icon-actions-resource-group-new { background-image: url('../assets/icons/actions/resource-group-new.png'); }
 
 /* apps icons */
 .icon-apps-help-browser { background-image: url('../assets/icons/apps/help-browser.png'); }

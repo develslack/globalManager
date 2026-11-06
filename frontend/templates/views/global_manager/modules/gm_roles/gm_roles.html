@@ -1,0 +1,34 @@
+<div class="panel panel-default">
+    <div class="panel-header">
+        <h3 class="panel-title">
+            <span class="icon icon-user icon-sm"></span>
+                <span class="icon icon-apps-system-users icon-md"></span> Roles
+        </h3>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <button id="btn-add-rol" class="btn btn-success btn-sm" type="button">Añadir Rol</button>
+            </div>
+    </div>
+    <div class="panel-body" style="padding: 0;">
+
+        <div class="table-container" style="border: none; box-shadow: none;">
+
+            <!-- Atributos declarativos para DataTables -->
+            <table id="rolesTable" class="table table-striped table-hover" data-core-table data-page-size="5" data-filename="roles-report">
+                <thead>
+
+                        <th>Descripción</th>
+                        <th class="no-sort">Acciones</th>
+
+                </thead>
+
+                <tbody id="rolesTableBody"></tbody>
+
+            </table>
+
+            <div id="alert-info"></div>
+
+        </div>
+
+    </div>
+</div>
+

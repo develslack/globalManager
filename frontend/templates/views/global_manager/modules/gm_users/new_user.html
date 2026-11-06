@@ -2,7 +2,7 @@
     <div class="modal modal-md modal-success">
         <div class="modal-header">
             <h4 class="modal-title">
-                <span class="icon icon-user icon-sm"></span> Alta de Usuario
+                <span class="icon icon-actions-resource-group-new icon-lg"></span> Alta de Usuario
             </h4>
             <button type="button" class="btn-modal-close" data-core-dismiss="modal">&times;</button>
         </div>
@@ -12,15 +12,37 @@
             <div class="modal-body">
                 <div class="form-group">
                     <label class="form-label">Nombre y Apellido</label>
-                    <input type="text" name="nombre" class="form-control" required placeholder="Ej: Juan Pérez">
+                    <input type="text" name="name" id ="name" class="form-control" required placeholder="Ingrese su Nombre y Apellido">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Correo Electrónico</label>
-                    <input type="email" name="email" class="form-control" required placeholder="usuario@empresa.com">
+                    <input type="email" name="email" id ="email" class="form-control" required placeholder="usuario@empresa.com">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Contraseña</label>
-                    <input type="password" name="password" class="form-control" required placeholder="Ingrese una clave segura">
+                    <label class="form-label">Password</label>
+                    <div class="input-embedded">
+                        <input type="password" name="password_1" id ="password_1" class="form-control" required placeholder="Ingrese un password">
+                        <button type="button"
+                            class="btn btn-default btn-sm" onclick="LibCore.togglePassword('password_1', this)"
+                            data-core-toggle="password"
+                            data-target="input-pass"
+                            title="Mostrar/Ocultar contraseña">
+                            <span class="icon icon-actions-layer-visible-on icon-sm"></span>
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Repetir Password</label>
+                        <div class="input-embedded">
+                        <input type="password" name="password_2" id ="password_2" class="form-control" required placeholder="Repita el password">
+                            <button type="button"
+                                class="btn btn-default btn-sm" onclick="LibCore.togglePassword('password_2', this)"
+                                data-core-toggle="password"
+                                data-target="input-pass"
+                                title="Mostrar/Ocultar contraseña">
+                                <span class="icon icon-actions-layer-visible-on icon-sm"></span>
+                            </button>
+                        </div>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Asignar Rol</label>
@@ -31,8 +53,10 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default btn-sm" data-core-dismiss="modal">Cancelar</button>
-                <button type="submit" class="btn btn-success btn-sm">Guardar Usuario</button>
+                <button type="button" class="btn btn-default btn-sm" data-core-dismiss="modal">
+                    <span class="icon icon-actions-application-exit icon-sm"></span> Cancelar</button>
+                <button type="submit" class="btn btn-default btn-sm">
+                    <span class="icon icon-actions-dialog-ok icon-sm"></span> Aceptar</button>
             </div>
         </form>
     </div>

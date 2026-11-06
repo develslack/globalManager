@@ -53,11 +53,17 @@ void roles_init_cache(ArrayList* alist_roles) {
 }
 
 void roles_load_storage(ArrayList* alist_roles) {
+
     if (alist_roles == NULL) return;
 
     DB_DataSet ds;
+
+    // Invocación a Blackbox estricta para procedimientos SIN parámetros (0)
+    // El segundo parámetro DEBE ser estrictamente NULL (sin crear variables intermedias)
     if (db_call_sp("SP_GET_ALL_ROLES", NULL, 0, &ds) != 0) {
         fprintf(stderr, "❌ Error al cargar almacenamiento de roles.\n");
+        // Aseguramos que la consola imprima lo que tenga, forzando un string vacío si es basura
+        fprintf(stderr, "Detalle interno del motor DB: %s\n", ds.error_msg[0] != '\0' ? ds.error_msg : "Fallo de conexión o SegFault en db.c");
         db_free_dataset(&ds);
         return;
     }
@@ -74,6 +80,7 @@ void roles_load_storage(ArrayList* alist_roles) {
     db_free_dataset(&ds);
     printf("===================================================================================\n");
     printf("📊 Memoria: %d roles cargados. Espacio reservado: %d slots.\n", alist_roles->len(alist_roles), alist_roles->reservedSize);
+
 }
 
 // ===================================================================================================================== //

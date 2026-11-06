@@ -31,9 +31,6 @@ int main() {
     // 4. Iniciamos session_manager como controlador del sistema
     session_manager_init();
 
-    // SE CARGAN EN MENORIA LOS DATOS
-    ArrayList* alist_users = al_newArrayList();
-
 
     // ================================================================================= //
     // 🚀 SI LLEGA A ESTE PUNTO, EL HARDWARE ESTÁ BLINDADO Y ES APTO PARA 24x365
@@ -45,6 +42,11 @@ int main() {
         fprintf(stderr, "❌ [FATAL] Error crítico al conectar e inicializar el motor de Base de Datos. Abortando.\n");
         exit(EXIT_FAILURE);
     }
+
+    // SE CARGAN EN MENORIA LOS DATOS
+    ArrayList* alist_roles = al_newArrayList();
+    roles_init_cache(alist_roles);
+    roles_load_storage(alist_roles);
 
     // 6. Registrar las rutas de los módulos del negocio
     init_login_routes();
