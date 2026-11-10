@@ -44,7 +44,7 @@ const GM_ROLES = (function() {
                     <td class="text-center">${u.descripcion}</td>
                     <td class="text-center">
                       <button class="btn btn-warning btn-sm btn-editar-rol" data-id="${u.id}">
-                        <span class="glyphicon glyphicon-edit"></span> Editar
+                        <span class="icon icon-actions-document-edit icon-sm"></span> Editar
                       </button>
                     </td>`;
                 tableBody.appendChild(row);
@@ -97,8 +97,8 @@ const GM_ROLES = (function() {
             const btnEdit = e.target.closest(".btn-editar-rol");
             if (btnEdit) {
                 e.preventDefault();
-                const userId = btnEdit.dataset.id;
-                console.log("🧩 Solicitud de edición de rol para usuario ID:", userId);
+                const rolId = btnEdit.dataset.id;
+                console.log("🧩 Solicitud de edición de rol para usuario ID:", rolId);
             }
         });
     }
@@ -106,7 +106,7 @@ const GM_ROLES = (function() {
     /**
      * Carga asíncrona del modal parcial de alta y apertura mediante LibCore
      */
-    async function openNewUserModal() {
+    async function openNewRolModal() {
         console.log("📂 Solicitando modal de alta de rol...");
 
         // 1. Contenedor temporal con ID único (evita colisión con el ID del modal interno)
@@ -154,7 +154,7 @@ const GM_ROLES = (function() {
      * Configuración del envío del formulario de alta al backend
      */
     function initNewRolFormListeners() {
-        const form = document.getElementById("form-new_user");
+        const form = document.getElementById("form-new_rol");
         if (!form) return;
 
         form.addEventListener("submit", async (e) => {
@@ -168,7 +168,7 @@ const GM_ROLES = (function() {
                     LibCore.showLoader('modal-new_rol', 'spinner', 'submit', 'Registrando rol...');
                 }
 
-                const res = await fetch(window.API_BASE_URL + "/roles/register", {
+                const res = await fetch(window.API_BASE_URL + "/roles/add", {
                     method: "POST",
                     headers: { "Content-Type": "application/x-www-form-urlencoded" },
                     body: formData.toString()
@@ -179,7 +179,7 @@ const GM_ROLES = (function() {
                 if (result.status === "ok" || res.ok) {
                     if (typeof LibCore !== 'undefined') {
                         LibCore.toast(result.message || "Rol registrado exitosamente.", "success", "Éxito");
-                        LibCore.closeModal("modal-new_user");
+                        LibCore.closeModal("modal-new_rol");
                     }
                     await loadUsersList();
                 } else {

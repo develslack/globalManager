@@ -88,8 +88,8 @@ void roles_load_storage(ArrayList* alist_roles) {
 // ===================================================================================================================== //
 
 int roles_service_register(const char *body, char *error_msg, int error_size) {
-    char descripcion[128];
-    char d_descripcion[128];
+    char descripcion[100];
+    char d_descripcion[100];
 
     get_roles_value(body, "descripcion", descripcion, sizeof(descripcion));
     url_decode(d_descripcion, descripcion);

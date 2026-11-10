@@ -57,6 +57,7 @@
 
 /* actions icons */
 .icon-actions-list-add-user { background-image: url('../assets/icons/actions/list-add-user.png'); }
+.icon-actions-list-add { background-image: url('../assets/icons/actions/list-add.png'); }
 .icon-actions-layer-visible-on { background-image: url('../assets/icons/actions/layer-visible-on.png'); }
 .icon-actions-layer-visible-off { background-image: url('../assets/icons/actions/layer-visible-off.png'); }
 .icon-actions-system-shutdown { background-image: url('../assets/icons/actions/system-shutdown.png'); }
@@ -75,6 +76,7 @@
 .icon-actions-application-exit { background-image: url('../assets/icons/actions/application-exit.png'); }
 .icon-actions-dialog-ok { background-image: url('../assets/icons/actions/dialog-ok.png'); }
 .icon-actions-resource-group-new { background-image: url('../assets/icons/actions/resource-group-new.png'); }
+.icon-actions-document-edit { background-image: url('../assets/icons/actions/document-edit.png'); }
 
 /* apps icons */
 .icon-apps-help-browser { background-image: url('../assets/icons/apps/help-browser.png'); }
